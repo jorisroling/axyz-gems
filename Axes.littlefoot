@@ -3,11 +3,17 @@
           target="Lightpad"
           tags="MIDI;Controller;">
     <variables>
-        <variable name="page" displayName="Active Page" type="int" min="0" max="4" value="0" displayMode="stepper"/>
+        <variable name="page" displayName="Active Page (first touch)" type="int" min="0" max="4" value="0" displayMode="stepper"/>
         <variable name="highres" displayName="High resolution" type="bool" value="true"/>
 
+        <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on" />
+        <variable name="send" displayName="Send" type="option" value="All" options="All;X;Y;Z;" tooltip="Which parts of a touch should be sent" />
+        <variable name="beat" displayName="Show beat dot" type="bool" value="true"/>
+        <variable name="protect" displayName="Protect X &amp; Y changes when Z is on it's way up" type="bool" value="true"/>
+        <variable name="configMode" displayName="Config mode" type="bool" value="false" visible="false"/>
+
 	    <vector count="5" wantsGetFunctions="true" wantsSetFunctions="true">
-            <variable name="xCC" min="0" value="1" visible="false"/>
+            <variable name="xCC" type="int" value="1" visible="false"/>
             <variable name="yCC" type="int" value="1" visible="false"/>
             <variable name="zCC" type="int" value="1" visible="false"/>
             <variable name="background" type="colour" value="0x000000" visible="false"/>
@@ -17,16 +23,9 @@
             <variable name="rnd" type="int" value="0" visible="false"/>
         </vector>
 
-        <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on" />
-        <variable name="send" displayName="Send" type="option" value="All" options="All;X;Y;Z;" tooltip="Which parts of a touch should be sent" />
-        <variable name="beat" displayName="Show beat dot" type="bool" value="true"/>
-        <variable name="protect" displayName="Protect X &mp; Y changes when Z is on it's way up" type="bool" value="true"/>
-
      </variables>
 </metadata>
 */
-
-//        <variable name="zboost" displayName="Boost X &amp; Y by Z" type="bool" value="false"/>
 
 // heapsize: (pages * axes * bytes)
 #heapsize: (5 * 3 * 2)
@@ -41,10 +40,12 @@
  */
 
 
+
 bool gammaCorrected;
 
 int repaintCounter;
 int performStamp;
+int buttonStamp;
 int breathCounter;
 int clockStamp;
 int clockCounter;
@@ -66,6 +67,7 @@ void initialise()
     beat8 = false;
     beat16 = false;
 
+    
 	for (int i = 0; i < 32; ++i)
         setLocalConfigActiveState (i, false, false);
 
@@ -81,14 +83,12 @@ void initialise()
         setXCC(p, 20 + ( (p-1) * 3 ) + 0);
         setYCC(p, 20 + ( (p-1) * 3 ) + 1);
         setZCC(p, 20 + ( (p-1) * 3 ) + 2);
-//        setBackground(p, makeARGB(255, 105, 5, 33));
         setDot(p, 255 << (p-1) * 8 );
 
         setHeapByte( ( p * 3 * 2) + 0 + 0, 64);
         setHeapByte( ( p * 3 * 2) + 1 + 0, 64);
     }
     setDot(0, makeARGB(255, 255, 127, 0) );
-//    setDot(1, makeARGB(255, 255, 0, 0) );
     setDot(1, makeARGBfromAHSV(0xFF,0,0xFF,0xFF) );
     setDot(2, makeARGB(255, 0, 255, 0) );
     setDot(3, makeARGB(255, 0, 0, 255) );
@@ -99,7 +99,7 @@ void initialise()
     setHue(2,85);
     setHue(3,170);
     setHue(4,212);
-    
+
     for (int p=0; p<5; p++) {
         setHeapByte( (p * 3 * 2) + 0 + 0, 0xFF);
         setHeapByte( (p * 3 * 2) + 0 + 1, 0xFF);
@@ -165,7 +165,7 @@ int mapTouchToRange (float v, float inMin, float inMax, float outMax)
 }
 
 bool performCC (float v, int cc, float inMin, float inMax, bool invert, int axis, bool output, int index)
-{   
+{
     int valueMSB = mapTouchToRange (v, inMin, inMax, 127.0);
     if (invert) valueMSB = 127 - valueMSB;
     int offsetMSB = (index * 3 * 2) + axis + 0;
@@ -184,50 +184,85 @@ bool performCC (float v, int cc, float inMin, float inMax, bool invert, int axis
         if (output && highres) sendCC ((channel - 1), cc + 32, valueLSB);
     }
     performStamp = repaintCounter;
-    
+
     return ((valueMSB << 7) | valueLSB) >= ((oldMSB << 7) | oldLSB);
 }
-
 
 
 void handleTouch (int index, float x, float y, float z, float scale)
 {
     if (index >= 0 && index <= 5) {
-//        log(int(x * 100));
-//        if (zboost) {
-//            x = max( min( x * (z + 1.00), 1.0 - 0.07), 0.0 + 0.07);
-//            y = max( min( y * (z + 1.00), 2.0 - 0.07), 0.0 + 0.07);
-//        }
-//        log(int(x * 100));
         bool zDown = performCC(z, getZCC(index), 0.0, 100.0, false, 2, (send == 0 || send == 3), index);
-        if (zDown || !protect) { 
+        if (zDown || !protect) {
             performCC(x, getXCC(index), 0.0 + 7.0, 200.0 - 7.0, false, 0, (send == 0 || send == 1), index);
             performCC(y, getYCC(index), 0.0 + 7.0, 200.0 - 7.0, true, 1, (send == 0 || send == 2), index);
         }
-        //log(int(map(z,0.0,1.0,0.0,100.00)));
     }
 }
 
 
 void touchStart (int index, float x, float y, float z, float vz)
 {
-    if (index <= 5) {
-        int p = ((page + index) - 1) % 5;
-//        int colour = makeARGBfromAHSV(255, int(255.0 * x / 2.0), 255, 255);
-//        addPressurePoint (colour, x * 0.93, y * 0.93, z * 100.0);
-        handleTouch (p, x, y, z, 75.0);
-        fadePressureMap();
+    if (configMode) {
+        int px = int(map(x, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
+        int py = int(map(y, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
+        int pg = -1;
+        if (py < 6 ) {
+            int axes = 0;
+            if (px < 6) {
+                axes = 1;
+            } else if (px < 11) {
+                axes = 2;
+            } else if (px < 15) {
+                axes = 3;
+            }
+            if (axes) {
+                send = (send == axes) ? 0 : axes;
+            }
+        } else if (py < 10) {
+            if (px < 8) {
+                pg = 1;
+                
+            } else {
+                pg = 3;
+            }
+        } else {
+            if (px < 5) {
+                pg = 0;
+            } else if (px < 10) {
+                pg = 2;
+            } else {
+                pg = 4;
+            }
+        }
+        if (pg>=0) {
+            page = pg;
+             if (highres) {
+                 if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page)+32, 64);
+                 if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page)+32, 64);
+                 if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page)+32, 64);
+             }
+            if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page), 64);
+            if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page), 64);
+            if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page), 64);
+        }
+    } else {
+        if (index <= 5) {
+            int p = ((page + index) - 1) % 5;
+            handleTouch (p, x, y, z, 75.0);
+            fadePressureMap();
+        }
     }
 }
 
 void touchMove (int index, float x, float y, float z, float vz)
 {
-    if (index <= 5) {
-        int p = ((page + index) - 1) % 5;
-//        int colour = makeARGBfromAHSV(255, int(255.0 * x / 2.0), 255, 255);
-//        addPressurePoint (colour, x * 0.93, y * 0.93, z * 40.0);
-        handleTouch (p, x, y, z, 20.0);
-        fadePressureMap();
+    if (!configMode) {
+        if (index <= 5) {
+            int p = ((page + index) - 1) % 5;
+            handleTouch (p, x, y, z, 20.0);
+            fadePressureMap();
+        }
     }
 }
 
@@ -279,100 +314,166 @@ void repaint()
 {
     fillRect (getBackground(page), 0, 0, 15, 15);
 
-//    drawPressureMap();
-//    fadePressureMap();
-
-//    if (!(repaintCounter % 4)) flame = getRandomFloat();
-
-//    if (page) blendRect((getColourVariation(page) /*/ (breathCounter % 25)*/) | 0x00000000,(page - 1) * 4,0,3,1);
-
-    if (page == 1) {
-        drawDot(getColour(page), 0x4F, 0, 0);
-    } else if (page == 2) {
-        drawDot(getColour(page), 0x4F, 0, 14);
-    } else if (page == 3) {
-        drawDot(getColour(page), 0x4F, 14, 0);
-    } else if (page == 4) {
-        drawDot(getColour(page), 0x4F, 14, 14);
+    if (buttonStamp && (repaintCounter - buttonStamp) > 12) {
+        configMode = !configMode;
+        buttonStamp = 0;
     }
-    for (int o=4; o>=0; o--) {
-        int p = (page + o) % 5;
 
-        float flame = getFlame(p);
-        if (0 && playing) {
-            if (!(clockCounter % 3)) {
-                flame = getRandomFloat();
-                setFlame(p,flame);
-            }
-        } else {
+    if (configMode) {
+
+        int xo = 2;
+        int yo = 1;
+        //drawNumber (99, 0x7FFFFFFF, 0, 0);
+
+        int c = 0xFFFFFF;
+        int a;
+
+        a = (send == 1) ? 0xFF : 0x7F;
+
+        // X shape
+        drawDot(c, a, xo + 0, yo + 0);
+        drawDot(c, a, xo + 2, yo + 0);
+        drawDot(c, a, xo + 0, yo + 1);
+        drawDot(c, a, xo + 2, yo + 1);
+        drawDot(c, a, xo + 1, yo + 2);
+        drawDot(c, a, xo + 0, yo + 3);
+        drawDot(c, a, xo + 2, yo + 3);
+        drawDot(c, a, xo + 0, yo + 4);
+        drawDot(c, a, xo + 2, yo + 4);
+
+
+        xo += 4;
+        a = (send == 2) ? 0xFF : 0x7F;
+
+        // Y shape
+        drawDot(c, a, xo + 0, yo + 0);
+        drawDot(c, a, xo + 2, yo + 0);
+        drawDot(c, a, xo + 0, yo + 1);
+        drawDot(c, a, xo + 2, yo + 1);
+        drawDot(c, a, xo + 1, yo + 2);
+        drawDot(c, a, xo + 1, yo + 3);
+        drawDot(c, a, xo + 1, yo + 4);
+
+        xo += 4;
+        a = (send == 3) ? 0xFF : 0x7F;
+
+        // Y shape
+        drawDot(c, a, xo + 0, yo + 0);
+        drawDot(c, a, xo + 1, yo + 0);
+        drawDot(c, a, xo + 2, yo + 0);
+        drawDot(c, a, xo + 2, yo + 1);
+        drawDot(c, a, xo + 1, yo + 2);
+        drawDot(c, a, xo + 0, yo + 3);
+        drawDot(c, a, xo + 0, yo + 4);
+        drawDot(c, a, xo + 1, yo + 4);
+        drawDot(c, a, xo + 2, yo + 4);
+
+        drawPressureMap();
+        for (int p = 0; p<5; p++) {
+            float flame = getFlame(p);
             if (!(repaintCounter % 5)) {
                 flame = getRandomFloat();
                 setFlame(p,flame);
             }
+            float xf = map(((2.0/5)*p)+0.2, 0.0, 2.0, 0.07, 2.0 - 0.14);
+            float yf = (p % 2) ? 1.0 : 1.5;
+            addPressurePoint(getColourVariation(p), xf, yf, (((4 ) * 5.0) + (flame * 5)) + (0.3 * 75.0) );
+            if (p == page) {
+                blendCircle(0xFFFFFFFF,xf * 7.5, yf * 7.5, 0.4, true);
+            }
+            
+        }
+        fadePressureMap();
+    } else {
+        if (page == 1) {
+            drawDot(getColour(page), 0x4F, 0, 0);
+        } else if (page == 2) {
+            drawDot(getColour(page), 0x4F, 0, 14);
+        } else if (page == 3) {
+            drawDot(getColour(page), 0x4F, 14, 0);
+        } else if (page == 4) {
+            drawDot(getColour(page), 0x4F, 14, 14);
+        }
+        for (int o=4; o>=0; o--) {
+            int p = (page + o) % 5;
+
+            float flame = getFlame(p);
+            if (playing) {
+                if (!(clockCounter % 3)) {
+                    flame = getRandomFloat();
+                    setFlame(p,flame);
+                }
+            } else {
+                if (!(repaintCounter % 5)) {
+                    flame = getRandomFloat();
+                    setFlame(p,flame);
+                }
+            }
+
+            int x = getHeapByte( (p * 3 * 2) + 0 + 0 );
+            int y = getHeapByte( (p * 3 * 2) + 1 + 0 );
+            int z = getHeapByte( (p * 3 * 2) + 2 + 0 );
+
+            if (x > 127) continue;
+            if (y > 127) continue;
+            if (z > 127) z = 64;
+
+            float xf = map(float(x), 0.0, 127.0, 0.07, 2.0 * 0.93);
+            float yf = map(float(y), 0.0, 127.0, 2.0 * 0.93, 0.07);
+            float zf = map(float(z), 0.0, 127.0, 0.0, 1.0);
+
+            if (beat4) {
+                addPressurePoint (getColourVariation(p), xf , yf , (((5 - o) * 10.0) + (flame * 24)) + (zf * 75.0));
+            } else {
+                addPressurePoint (getColourVariation(p), xf , yf , (((4 ) * 5.0) + (flame * 5)) + (zf * 75.0) );
+            }
         }
 
-        int x = getHeapByte( (p * 3 * 2) + 0 + 0 );
-        int y = getHeapByte( (p * 3 * 2) + 1 + 0 );
-        int z = getHeapByte( (p * 3 * 2) + 2 + 0 );
 
-        if (x > 127) continue;
-        if (y > 127) continue;
-        if (z > 127) z = 64;
+        if (beat && beat4) {
+           drawDot(0xFFFFFF, 0xFF, 0, 0);
+        }
 
-        float xf = map(float(x), 0.0, 127.0, 0.07, 2.0 * 0.93);
-        float yf = map(float(y), 0.0, 127.0, 2.0 * 0.93, 0.07);
-        float zf = map(float(z), 0.0, 127.0, 0.0, 1.0);
+        drawPressureMap();
+        fadePressureMap();
 
-        if (beat4) {
-//            addPressurePoint (getColourVariation(p), xf , yf , ((5 - o) * 10.0) + (flame * 24));
-            addPressurePoint (getColourVariation(p), xf , yf , (((5 - o) * 10.0) + (flame * 24)) + (zf * 75.0));
-        } else {
-//            addPressurePoint (getColourVariation(p), xf , yf , (((4 - o) * 2.0) + (flame * 14))  *  ((zf*8.0) + 0.5) );
-            //addPressurePoint (getColourVariation(p), xf , yf , 25.0 + (zf * 75.0) );
-            addPressurePoint (getColourVariation(p), xf , yf , (((4 ) * 5.0) + (flame * 5)) + (zf * 75.0) );
+        for (int o=4; o>=0; o--) {
+            int p = (page + o) % 5;
+
+            int x = getHeapByte( (p * 3 * 2) + 0 + 0 );
+            int y = getHeapByte( (p * 3 * 2) + 1 + 0 );
+
+            if (x > 127) continue;
+            if (y > 127) continue;
+
+            float xf = map(float(x), 0.0, 127.0, 0.0, 14.0);
+            float yf = map(float(y), 0.0, 127.0, 14.0, 0.0);
+            blendCircle(0xFFFFFF | (   ((225 - ((o+1)*31)) + getRnd(p))  << 24),xf, yf, 0.4, true);
         }
     }
-
-
-    if (beat && beat4) {
-       drawDot(0xFFFFFF, 0xFF, 0, 0);
-    }
-
-    drawPressureMap();
-    fadePressureMap();
-
-    for (int o=4; o>=0; o--) {
-        int p = (page + o) % 5;
-
-        int x = getHeapByte( (p * 3 * 2) + 0 + 0 );
-        int y = getHeapByte( (p * 3 * 2) + 1 + 0 );
-
-        if (x > 127) continue;
-        if (y > 127) continue;
-
-        int xp = min(((x * 15) / 127) + 0, 14);
-        int yp = max((15 - ((y * 15) / 127)) - 1, 0);
-        //blendCircle(0xFFFFFF | ((255 - ((o+1)*21)) << 24),xp * 1.0,yp *1.0,0.5,true);
-
-        float xf = map(float(x), 0.0, 127.0, 0.0, 14.0);
-        float yf = map(float(y), 0.0, 127.0, 14.0, 0.0);
-        blendCircle(0xFFFFFF | (   ((225 - ((o+1)*31)) + getRnd(p))  << 24),xf, yf, 0.4, true);
-
-//        drawDot(0xFFFFFF, /*o ? 127 : 255*/ 255 - (o*50), xp, yp);
-    }
-
 
     if (beat4) beat4 = false;
     if (beat8) beat8 = false;
     if (beat16) beat16 = false;
 
     repaintCounter++;
-    breathCounter++;    
+    breathCounter++;
 }
-// https://www.dafont.com/5x5.font
 
 void handleButtonDown(int index) {
-    page = page >= 4 ? 0 : page + 1;
+    if (configMode) {
+        configMode = false;
+    } else {
+        buttonStamp = repaintCounter;
+    }
+}
+
+
+void handleButtonUp(int index) {
+    if ((repaintCounter - buttonStamp) <=12) {
+        page = page >= 4 ? 0 : page + 1;
+    }
+    buttonStamp = 0;
 }
 
 void handleMIDI(int byte0, int byte1, int byte2)
@@ -409,73 +510,32 @@ void handleMIDI(int byte0, int byte1, int byte2)
            if (offset >= 0) {
                if (getHeapByte(offset) != value) {
                    setHeapByte(offset, value);
-//                    if (x>=0 && y>=0) {
-//                     int colour = makeARGBfromAHSV(255, int(255.0 * x / 2.0), 255, 255);
-//                     addPressurePoint (colour, x * 0.93, y * 0.93, 1 * 100.0);
-//                    }
                }
-               
-//                if (offset>(1 * 3 * 2)) {
-//                    bool zero=true;
-//                    for (int o=(1 * 3 * 2);o < (5 * 3 * 2);o+=2) {
-//                        int msb = getHeapByte(o + 0);
-//                        int lsb = getHeapByte(o + 1);
-//                        if (msb != 0xFF && lsb != 0xFF) {
-//                            if (msb != 64 || lsb != 0) {
-//                                zero=false;
-//                                log(o);
-//                                log(getHeapByte(o + 0));
-//                                log(getHeapByte(o + 1));
-//                            }
-//                        }
-//                    }
-//                    if (zero) {
-//                        for (int o=(1 * 3 * 2); o < (5 * 3 * 2);o++) {
-//                            setHeapByte(o, 0xFF);
-//                        }
-//                    }
-//                }
-//                               
-               
             }
         }
     } else if (byte0 == 242) { // MIDI Song Position
        clockCounter = byte1 | (byte2 << 7);
-//log(byte1 | (byte2 << 7));
     } else if (byte0 == 248) { // MIDI clock
         clockCounter++;
         clockStamp = repaintCounter;
         if (!((clockCounter+0)%24)) beat4 = true;
         if (!((clockCounter+12)%12)) beat8 = true;
         if (!((clockCounter+12)%6)) beat16 = true;
-       //logHex(byte0);
     } else if (byte0 == 250) { // MIDI start
         playing = true;
         clockCounter = -1;
-//        log(clockCounter);
-
     } else if (byte0 == 251) { // MIDI continue
         playing = true;
     } else if (byte0 == 252) { // MIDI stop
         playing = false;
     }
-//        log(byte0);
-//        logHex(byte0);
 }
 
 
 
-
-void handleMessage (int data0, int data1, int data2)
-{
-    log(data0);
-    log(data1);
-    log(data2);
-    
-}
 
 /*
-<display backgroundColour="0xFF000000" textColour ="0xFF999999">
+<display backgroundColour="0xFF7F7F7F" textColour ="0xFF999999">
     <pixels>
         <pixel index="0" colour="0xFF000000" />
         <pixel index="1" colour="0xFF000000" />
@@ -614,30 +674,30 @@ void handleMessage (int data0, int data1, int data2)
         <pixel index="134" colour="0xFF000000" />
         <pixel index="135" colour="0xFF000000" />
         <pixel index="136" colour="0xFF000000" />
-        <pixel index="137" colour="0xFF000000" />
+        <pixel index="137" colour="0xFF7F7F7F" />
         <pixel index="138" colour="0xFF000000" />
-        <pixel index="139" colour="0xFF000000" />
+        <pixel index="139" colour="0xFF7F7F7F" />
         <pixel index="140" colour="0xFF000000" />
         <pixel index="141" colour="0xFF5B0000" />
         <pixel index="142" colour="0xFFAD0101" />
         <pixel index="143" colour="0xFF5B0000" />
         <pixel index="144" colour="0xFF000000" />
-        <pixel index="145" colour="0xFF000000" />
-        <pixel index="146" colour="0xFF000000" />
-        <pixel index="147" colour="0xFF000000" />
+        <pixel index="145" colour="0xFF7F7F7F" />
+        <pixel index="146" colour="0xFF7F7F7F" />
+        <pixel index="147" colour="0xFF7F7F7F" />
         <pixel index="148" colour="0xFF000000" />
         <pixel index="149" colour="0xFF000000" />
         <pixel index="150" colour="0xFF000000" />
         <pixel index="151" colour="0xFF000000" />
-        <pixel index="152" colour="0xFF000000" />
+        <pixel index="152" colour="0xFF7F7F7F" />
         <pixel index="153" colour="0xFF000000" />
-        <pixel index="154" colour="0xFF000000" />
+        <pixel index="154" colour="0xFF7F7F7F" />
         <pixel index="155" colour="0xFF000000" />
         <pixel index="156" colour="0xFF000000" />
-        <pixel index="157" colour="0xFF000000" />
+        <pixel index="157" colour="0xFF7F7F7F" />
         <pixel index="158" colour="0xFF000000" />
         <pixel index="159" colour="0xFF000000" />
-        <pixel index="160" colour="0xFF000000" />
+        <pixel index="160" colour="0xFF7F7F7F" />
         <pixel index="161" colour="0xFF000000" />
         <pixel index="162" colour="0xFF000000" />
         <pixel index="163" colour="0xFF000000" />
@@ -645,46 +705,46 @@ void handleMessage (int data0, int data1, int data2)
         <pixel index="165" colour="0xFF000000" />
         <pixel index="166" colour="0xFF000000" />
         <pixel index="167" colour="0xFF000000" />
-        <pixel index="168" colour="0xFF000000" />
+        <pixel index="168" colour="0xFF7F7F7F" />
         <pixel index="169" colour="0xFF000000" />
         <pixel index="170" colour="0xFF000000" />
         <pixel index="171" colour="0xFF000000" />
-        <pixel index="172" colour="0xFF000000" />
+        <pixel index="172" colour="0xFF7F7F7F" />
         <pixel index="173" colour="0xFF000000" />
         <pixel index="174" colour="0xFF000000" />
         <pixel index="175" colour="0xFF000000" />
-        <pixel index="176" colour="0xFF000000" />
+        <pixel index="176" colour="0xFF7F7F7F" />
         <pixel index="177" colour="0xFF000000" />
         <pixel index="178" colour="0xFF000000" />
         <pixel index="179" colour="0xFF000000" />
         <pixel index="180" colour="0xFF000000" />
         <pixel index="181" colour="0xFF000000" />
-        <pixel index="182" colour="0xFF000000" />
+        <pixel index="182" colour="0xFF7F7F7F" />
         <pixel index="183" colour="0xFF000000" />
-        <pixel index="184" colour="0xFF000000" />
+        <pixel index="184" colour="0xFF7F7F7F" />
         <pixel index="185" colour="0xFF000000" />
-        <pixel index="186" colour="0xFF000000" />
+        <pixel index="186" colour="0xFF7F7F7F" />
         <pixel index="187" colour="0xFF000000" />
-        <pixel index="188" colour="0xFF000000" />
+        <pixel index="188" colour="0xFF7F7F7F" />
         <pixel index="189" colour="0xFF000000" />
         <pixel index="190" colour="0xFF000000" />
         <pixel index="191" colour="0xFF000000" />
-        <pixel index="192" colour="0xFF000000" />
+        <pixel index="192" colour="0xFF7F7F7F" />
         <pixel index="193" colour="0xFF000000" />
         <pixel index="194" colour="0xFF000000" />
         <pixel index="195" colour="0xFF000000" />
         <pixel index="196" colour="0xFF000000" />
-        <pixel index="197" colour="0xFF000000" />
+        <pixel index="197" colour="0xFF7F7F7F" />
         <pixel index="198" colour="0xFF000000" />
-        <pixel index="199" colour="0xFF000000" />
+        <pixel index="199" colour="0xFF7F7F7F" />
         <pixel index="200" colour="0xFF000000" />
-        <pixel index="201" colour="0xFF000000" />
+        <pixel index="201" colour="0xFF7F7F7F" />
         <pixel index="202" colour="0xFF000000" />
-        <pixel index="203" colour="0xFF000000" />
+        <pixel index="203" colour="0xFF7F7F7F" />
         <pixel index="204" colour="0xFF000000" />
-        <pixel index="205" colour="0xFF000000" />
-        <pixel index="206" colour="0xFF000000" />
-        <pixel index="207" colour="0xFF000000" />
+        <pixel index="205" colour="0xFF7F7F7F" />
+        <pixel index="206" colour="0xFF7F7F7F" />
+        <pixel index="207" colour="0xFF7F7F7F" />
         <pixel index="208" colour="0xFF000000" />
         <pixel index="209" colour="0xFF000000" />
         <pixel index="210" colour="0xFF000000" />
