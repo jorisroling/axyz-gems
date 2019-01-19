@@ -3,15 +3,18 @@
           target="Lightpad"
           tags="MIDI;Controller;">
     <variables>
-        <variable name="page" displayName="Active Page (first touch)" type="int" min="0" max="4" value="0" displayMode="stepper"/>
+        <variable name="page" displayName="Primary Gem (first touch)" type="int" min="0" max="4" value="1" displayMode="stepper"/>
         <variable name="highres" displayName="High resolution" type="bool" value="true"/>
 
         <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on" />
-        <variable name="send" displayName="Send" type="option" value="All" options="All;X;Y;Z;" tooltip="Which parts of a touch should be sent" />
-        <variable name="beat" displayName="Show beat dot" type="bool" value="true"/>
-        <variable name="protect" displayName="Protect X &amp; Y changes when Z is on it's way up" type="bool" value="true"/>
+        <variable name="send" displayName="Send" type="option" value="X" options="All;X;Y;Z;" tooltip="Which parts of a touch should be sent" visible="false"/>
+        <variable name="beat" displayName="Show beat dot" type="bool" value="true" visible="false"/>
         <variable name="configMode" displayName="Config mode" type="bool" value="false" visible="false"/>
-
+        <variable name="zboost" displayName="Amplify X &amp; Y by Z" type="bool" value="true"/>
+        <variable name="zscale" displayName="Z Scale" type="float" value="0.9" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z" displayMode="bipolar"/>
+        <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.5" min="0.0" max="1.0"/>
+        
+        
 	    <vector count="5" wantsGetFunctions="true" wantsSetFunctions="true">
             <variable name="xCC" type="int" value="1" visible="false"/>
             <variable name="yCC" type="int" value="1" visible="false"/>
@@ -61,13 +64,13 @@ void initialise()
     performStamp = 0;
     clockStamp = 0;
     breathCounter = 0;
-    clockCounter = 0;
+    clockCounter = -1;
     playing = false;
     beat4 = false;
     beat8 = false;
     beat16 = false;
 
-    
+
 	for (int i = 0; i < 32; ++i)
         setLocalConfigActiveState (i, false, false);
 
@@ -101,14 +104,15 @@ void initialise()
     setHue(4,212);
 
     for (int p=0; p<5; p++) {
-        setHeapByte( (p * 3 * 2) + 0 + 0, 0xFF);
-        setHeapByte( (p * 3 * 2) + 0 + 1, 0xFF);
-        setHeapByte( (p * 3 * 2) + 1 + 0, 0xFF);
-        setHeapByte( (p * 3 * 2) + 1 + 1, 0xFF);
+        setHeapByte( (p * 3 * 2) + 0 + 0, p ? 0x40 : 0xFF);
+        setHeapByte( (p * 3 * 2) + 0 + 1, p ? 0x00 : 0xFF);
+        setHeapByte( (p * 3 * 2) + 1 + 0, p ? 0x40 : 0xFF);
+        setHeapByte( (p * 3 * 2) + 1 + 1, p ? 0x00 : 0xFF);
         setHeapByte( (p * 3 * 2) + 2 + 0, 0xFF);
         setHeapByte( (p * 3 * 2) + 2 + 1, 0xFF);
     }
 }
+
 
 
 //==============================================================================
@@ -164,7 +168,7 @@ int mapTouchToRange (float v, float inMin, float inMax, float outMax)
     return int (mapped < 0.0 ? 0.0 : (mapped > outMax ? outMax : mapped) );
 }
 
-bool performCC (float v, int cc, float inMin, float inMax, bool invert, int axis, bool output, int index)
+void performCC (float v, int cc, float inMin, float inMax, bool invert, int axis, bool output, int index)
 {
     int valueMSB = mapTouchToRange (v, inMin, inMax, 127.0);
     if (invert) valueMSB = 127 - valueMSB;
@@ -184,72 +188,77 @@ bool performCC (float v, int cc, float inMin, float inMax, bool invert, int axis
         if (output && highres) sendCC ((channel - 1), cc + 32, valueLSB);
     }
     performStamp = repaintCounter;
-
-    return ((valueMSB << 7) | valueLSB) >= ((oldMSB << 7) | oldLSB);
 }
 
 
-void handleTouch (int index, float x, float y, float z, float scale)
+void handleTouch (int index, float x, float y, float z)
 {
+    
     if (index >= 0 && index <= 5) {
-        bool zDown = performCC(z, getZCC(index), 0.0, 100.0, false, 2, (send == 0 || send == 3), index);
-        if (zDown || !protect) {
-            performCC(x, getXCC(index), 0.0 + 7.0, 200.0 - 7.0, false, 0, (send == 0 || send == 1), index);
-            performCC(y, getYCC(index), 0.0 + 7.0, 200.0 - 7.0, true, 1, (send == 0 || send == 2), index);
+        if (zscale != 0.0 && z >= zthreshold) {
+            float scale = 1.0 + (zscale * ( 1.0 / ( (1.0 - zthreshold) / (z - zthreshold) ) ) );
+            //log (int(scale * 100));
+                
+            x = min(max (((x - 1.0) * scale) + 1.0, 0.0), 2.0 - 0.07);
+            y = min(max (((y - 1.0) * scale) + 1.0, 0.0), 2.0 - 0.07);
+
         }
+        performCC(x, getXCC(index), 0.0 + 7.0, 200.0 - 7.0, false, 0, true, index);
+        performCC(y, getYCC(index), 0.0 + 7.0, 200.0 - 7.0, true, 1, true, index);
+        performCC(z, getZCC(index), 0.0, 100.0, false, 2, true, index);
     }
 }
 
+void handleConfig(float x, float y)
+{
+    int px = int(map(x, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
+    int py = int(map(y, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
+    int pg = -1;
+    if (py < 6 ) {
+        if (px < 5) {
+            send = 1;
+        } else if (px < 10) {
+            send = 2;
+        } else if (px < 15) {
+            send = 3;
+        }
+    } else if (py < 10) {
+        if (px < 8) {
+            pg = 1;
+
+        } else {
+            pg = 3;
+        }
+    } else {
+        if (px < 5) {
+            pg = 0;
+        } else if (px < 10) {
+            pg = 2;
+        } else {
+            pg = 4;
+        }
+    }
+    if (pg>=0) {
+        page = pg;
+         if (highres) {
+             if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page)+32, 64);
+             if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page)+32, 64);
+             if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page)+32, 64);
+         }
+        if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page), 64);
+        if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page), 64);
+        if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page), 64);
+    }
+}
 
 void touchStart (int index, float x, float y, float z, float vz)
 {
     if (configMode) {
-        int px = int(map(x, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
-        int py = int(map(y, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
-        int pg = -1;
-        if (py < 6 ) {
-            int axes = 0;
-            if (px < 6) {
-                axes = 1;
-            } else if (px < 11) {
-                axes = 2;
-            } else if (px < 15) {
-                axes = 3;
-            }
-            if (axes) {
-                send = (send == axes) ? 0 : axes;
-            }
-        } else if (py < 10) {
-            if (px < 8) {
-                pg = 1;
-                
-            } else {
-                pg = 3;
-            }
-        } else {
-            if (px < 5) {
-                pg = 0;
-            } else if (px < 10) {
-                pg = 2;
-            } else {
-                pg = 4;
-            }
-        }
-        if (pg>=0) {
-            page = pg;
-             if (highres) {
-                 if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page)+32, 64);
-                 if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page)+32, 64);
-                 if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page)+32, 64);
-             }
-            if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page), 64);
-            if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page), 64);
-            if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page), 64);
-        }
+        handleConfig(x,y);
     } else {
         if (index <= 5) {
             int p = ((page + index) - 1) % 5;
-            handleTouch (p, x, y, z, 75.0);
+            handleTouch (p, x, y, z);
             fadePressureMap();
         }
     }
@@ -257,10 +266,12 @@ void touchStart (int index, float x, float y, float z, float vz)
 
 void touchMove (int index, float x, float y, float z, float vz)
 {
-    if (!configMode) {
+    if (configMode) {
+        handleConfig(x,y);
+    } else {
         if (index <= 5) {
             int p = ((page + index) - 1) % 5;
-            handleTouch (p, x, y, z, 20.0);
+            handleTouch (p, x, y, z);
             fadePressureMap();
         }
     }
@@ -279,9 +290,9 @@ void drawDot(int c,int a,int x,int y)
 int getColourVariation(int page)
 {
     int rnd;
-    int max = (page == 0 || page == 4) ? 8 : 32;
+    int max = (page == 0 || page == 4) ? 12 : 32;
     if (clockCounter>=0) {
-        if (!(clockCounter % 3)) {
+        if (beat4) {
             rnd = getRandomInt(max);
             setRnd(page,rnd);
         } else {
@@ -381,7 +392,7 @@ void repaint()
             if (p == page) {
                 blendCircle(0xFFFFFFFF,xf * 7.5, yf * 7.5, 0.4, true);
             }
-            
+
         }
         fadePressureMap();
     } else {
@@ -398,13 +409,13 @@ void repaint()
             int p = (page + o) % 5;
 
             float flame = getFlame(p);
-            if (playing) {
+            if (clockCounter>=0) {
                 if (!(clockCounter % 3)) {
                     flame = getRandomFloat();
                     setFlame(p,flame);
                 }
             } else {
-                if (!(repaintCounter % 5)) {
+                if (!(repaintCounter % 3)) {
                     flame = getRandomFloat();
                     setFlame(p,flame);
                 }
@@ -416,17 +427,21 @@ void repaint()
 
             if (x > 127) continue;
             if (y > 127) continue;
-            if (z > 127) z = 64;
+            if (z > 127) z = 0;
 
             float xf = map(float(x), 0.0, 127.0, 0.07, 2.0 * 0.93);
             float yf = map(float(y), 0.0, 127.0, 2.0 * 0.93, 0.07);
             float zf = map(float(z), 0.0, 127.0, 0.0, 1.0);
+//            log(int(zf * 100));
+//            log(int(z));
 
+            float scale = (((4 - o) * 8.0) + (flame * 24)) + (zf * 75.0);
+            //log(int(scale));
             if (beat4) {
-                addPressurePoint (getColourVariation(p), xf , yf , (((5 - o) * 10.0) + (flame * 24)) + (zf * 75.0));
+                addPressurePoint (getColourVariation(p), xf , yf , (((5 - o) * 16.0) + (flame * 24)) + (zf * 75.0));
             } else {
-                addPressurePoint (getColourVariation(p), xf , yf , (((4 ) * 5.0) + (flame * 5)) + (zf * 75.0) );
-            }
+                addPressurePoint (getColourVariation(p), xf , yf , scale );
+           }
         }
 
 
@@ -449,6 +464,7 @@ void repaint()
             float xf = map(float(x), 0.0, 127.0, 0.0, 14.0);
             float yf = map(float(y), 0.0, 127.0, 14.0, 0.0);
             blendCircle(0xFFFFFF | (   ((225 - ((o+1)*31)) + getRnd(p))  << 24),xf, yf, 0.4, true);
+//            blendCircle(0xFFFFFF | (   (255 / (o+1))  << 24),xf, yf, 0.4, true);
         }
     }
 
@@ -535,7 +551,7 @@ void handleMIDI(int byte0, int byte1, int byte2)
 
 
 /*
-<display backgroundColour="0xFF7F7F7F" textColour ="0xFF999999">
+<display backgroundColour="0xFF000000" textColour ="0xFFBBBBBB">
     <pixels>
         <pixel index="0" colour="0xFF000000" />
         <pixel index="1" colour="0xFF000000" />
