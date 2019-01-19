@@ -4,17 +4,16 @@
           tags="MIDI;Controller;">
     <variables>
         <variable name="page" displayName="Primary Gem (first touch)" type="int" min="0" max="4" value="1" displayMode="stepper"/>
-        <variable name="highres" displayName="High resolution" type="bool" value="true"/>
+        <variable name="highres" displayName="High resolution" type="bool" value="true" tooltip="If this option is turned on the sent values will also be counter parted with the extra LSB CC's, giving them a much higher resolution (0 - 16383 instead of 0 - 127)"/>
+        <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on"/>
+        <variable name="zscale" displayName="Z Scale" type="float" value="0.4" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z (pressure)" displayMode="bipolar"/>
+        <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.5" min="0.0" max="1.0" tooltip="How much Z (pressure) before scaling kicks in"/>
 
-        <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on" />
+
         <variable name="send" displayName="Send" type="option" value="X" options="All;X;Y;Z;" tooltip="Which parts of a touch should be sent" visible="false"/>
-        <variable name="beat" displayName="Show beat dot" type="bool" value="true" visible="false"/>
+        <variable name="beat" displayName="Show beat dot" type="bool" value="false" visible="false"/>
         <variable name="configMode" displayName="Config mode" type="bool" value="false" visible="false"/>
-        <variable name="zboost" displayName="Amplify X &amp; Y by Z" type="bool" value="true"/>
-        <variable name="zscale" displayName="Z Scale" type="float" value="0.9" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z" displayMode="bipolar"/>
-        <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.5" min="0.0" max="1.0"/>
-        
-        
+
 	    <vector count="5" wantsGetFunctions="true" wantsSetFunctions="true">
             <variable name="xCC" type="int" value="1" visible="false"/>
             <variable name="yCC" type="int" value="1" visible="false"/>
@@ -193,12 +192,11 @@ void performCC (float v, int cc, float inMin, float inMax, bool invert, int axis
 
 void handleTouch (int index, float x, float y, float z)
 {
-    
+
     if (index >= 0 && index <= 5) {
         if (zscale != 0.0 && z >= zthreshold) {
             float scale = 1.0 + (zscale * ( 1.0 / ( (1.0 - zthreshold) / (z - zthreshold) ) ) );
-            //log (int(scale * 100));
-                
+
             x = min(max (((x - 1.0) * scale) + 1.0, 0.0), 2.0 - 0.07);
             y = min(max (((y - 1.0) * scale) + 1.0, 0.0), 2.0 - 0.07);
 
@@ -432,11 +430,8 @@ void repaint()
             float xf = map(float(x), 0.0, 127.0, 0.07, 2.0 * 0.93);
             float yf = map(float(y), 0.0, 127.0, 2.0 * 0.93, 0.07);
             float zf = map(float(z), 0.0, 127.0, 0.0, 1.0);
-//            log(int(zf * 100));
-//            log(int(z));
 
             float scale = (((4 - o) * 8.0) + (flame * 24)) + (zf * 75.0);
-            //log(int(scale));
             if (beat4) {
                 addPressurePoint (getColourVariation(p), xf , yf , (((5 - o) * 16.0) + (flame * 24)) + (zf * 75.0));
             } else {
@@ -464,7 +459,6 @@ void repaint()
             float xf = map(float(x), 0.0, 127.0, 0.0, 14.0);
             float yf = map(float(y), 0.0, 127.0, 14.0, 0.0);
             blendCircle(0xFFFFFF | (   ((225 - ((o+1)*31)) + getRnd(p))  << 24),xf, yf, 0.4, true);
-//            blendCircle(0xFFFFFF | (   (255 / (o+1))  << 24),xf, yf, 0.4, true);
         }
     }
 
@@ -548,8 +542,6 @@ void handleMIDI(int byte0, int byte1, int byte2)
 }
 
 
-
-
 /*
 <display backgroundColour="0xFF000000" textColour ="0xFFBBBBBB">
     <pixels>
@@ -570,77 +562,77 @@ void handleMIDI(int byte0, int byte1, int byte2)
         <pixel index="14" colour="0xFF000000" />
         <pixel index="15" colour="0xFF000000" />
         <pixel index="16" colour="0xFF000000" />
-        <pixel index="17" colour="0xFF000000" />
-        <pixel index="18" colour="0xFF000000" />
-        <pixel index="19" colour="0xFF000000" />
+        <pixel index="17" colour="0xFF005B00" />
+        <pixel index="18" colour="0xFF01AD01" />
+        <pixel index="19" colour="0xFF005B00" />
         <pixel index="20" colour="0xFF000000" />
         <pixel index="21" colour="0xFF000000" />
         <pixel index="22" colour="0xFF000000" />
         <pixel index="23" colour="0xFF000000" />
         <pixel index="24" colour="0xFF000000" />
-        <pixel index="25" colour="0xFF000000" />
-        <pixel index="26" colour="0xFF000000" />
-        <pixel index="27" colour="0xFF000000" />
+        <pixel index="25" colour="0xFF00005B" />
+        <pixel index="26" colour="0xFF0101AD" />
+        <pixel index="27" colour="0xFF00005B" />
         <pixel index="28" colour="0xFF000000" />
         <pixel index="29" colour="0xFF000000" />
         <pixel index="30" colour="0xFF000000" />
-        <pixel index="31" colour="0xFF000000" />
-        <pixel index="32" colour="0xFF000000" />
-        <pixel index="33" colour="0xFF000000" />
-        <pixel index="34" colour="0xFF000000" />
-        <pixel index="35" colour="0xFF000000" />
+        <pixel index="31" colour="0xFF005B00" />
+        <pixel index="32" colour="0xFF00CF00" />
+        <pixel index="33" colour="0xFF5BFF5B" />
+        <pixel index="34" colour="0xFF00CF00" />
+        <pixel index="35" colour="0xFF005B00" />
         <pixel index="36" colour="0xFF000000" />
         <pixel index="37" colour="0xFF000000" />
         <pixel index="38" colour="0xFF000000" />
-        <pixel index="39" colour="0xFF000000" />
-        <pixel index="40" colour="0xFF000000" />
-        <pixel index="41" colour="0xFF000000" />
-        <pixel index="42" colour="0xFF000000" />
-        <pixel index="43" colour="0xFF000000" />
+        <pixel index="39" colour="0xFF00005B" />
+        <pixel index="40" colour="0xFF0000FF" />
+        <pixel index="41" colour="0xFF5B5BFF" />
+        <pixel index="42" colour="0xFF0000FF" />
+        <pixel index="43" colour="0xFF00005B" />
         <pixel index="44" colour="0xFF000000" />
         <pixel index="45" colour="0xFF000000" />
-        <pixel index="46" colour="0xFF000000" />
-        <pixel index="47" colour="0xFF000000" />
-        <pixel index="48" colour="0xFF000000" />
-        <pixel index="49" colour="0xFF000000" />
-        <pixel index="50" colour="0xFF000000" />
+        <pixel index="46" colour="0xFF01AD01" />
+        <pixel index="47" colour="0xFF5BFF5B" />
+        <pixel index="48" colour="0xFFB3FFB3" />
+        <pixel index="49" colour="0xFF5BFF5B" />
+        <pixel index="50" colour="0xFF01AD01" />
         <pixel index="51" colour="0xFF000000" />
         <pixel index="52" colour="0xFF000000" />
         <pixel index="53" colour="0xFF000000" />
-        <pixel index="54" colour="0xFF000000" />
-        <pixel index="55" colour="0xFF000000" />
-        <pixel index="56" colour="0xFF000000" />
-        <pixel index="57" colour="0xFF000000" />
-        <pixel index="58" colour="0xFF000000" />
+        <pixel index="54" colour="0xFF0101AD" />
+        <pixel index="55" colour="0xFF5B5BFF" />
+        <pixel index="56" colour="0xFFB2B3FF" />
+        <pixel index="57" colour="0xFF5B5BFF" />
+        <pixel index="58" colour="0xFF0101AD" />
         <pixel index="59" colour="0xFF000000" />
         <pixel index="60" colour="0xFF000000" />
-        <pixel index="61" colour="0xFF000000" />
-        <pixel index="62" colour="0xFF000000" />
-        <pixel index="63" colour="0xFF000000" />
-        <pixel index="64" colour="0xFF000000" />
-        <pixel index="65" colour="0xFF000000" />
+        <pixel index="61" colour="0xFF005B00" />
+        <pixel index="62" colour="0xFF00CF00" />
+        <pixel index="63" colour="0xFF5BFF5B" />
+        <pixel index="64" colour="0xFF00CF00" />
+        <pixel index="65" colour="0xFF005B00" />
         <pixel index="66" colour="0xFF000000" />
         <pixel index="67" colour="0xFF000000" />
         <pixel index="68" colour="0xFF000000" />
-        <pixel index="69" colour="0xFF000000" />
-        <pixel index="70" colour="0xFF000000" />
-        <pixel index="71" colour="0xFF000000" />
-        <pixel index="72" colour="0xFF000000" />
-        <pixel index="73" colour="0xFF000000" />
+        <pixel index="69" colour="0xFF00005B" />
+        <pixel index="70" colour="0xFF0000FF" />
+        <pixel index="71" colour="0xFF5B5BFF" />
+        <pixel index="72" colour="0xFF0000FF" />
+        <pixel index="73" colour="0xFF00005B" />
         <pixel index="74" colour="0xFF000000" />
         <pixel index="75" colour="0xFF000000" />
         <pixel index="76" colour="0xFF000000" />
-        <pixel index="77" colour="0xFF000000" />
-        <pixel index="78" colour="0xFF000000" />
-        <pixel index="79" colour="0xFF000000" />
+        <pixel index="77" colour="0xFF005B00" />
+        <pixel index="78" colour="0xFF01AD01" />
+        <pixel index="79" colour="0xFF005B00" />
         <pixel index="80" colour="0xFF000000" />
         <pixel index="81" colour="0xFF5B0000" />
         <pixel index="82" colour="0xFFAD0101" />
         <pixel index="83" colour="0xFF5B0000" />
         <pixel index="84" colour="0xFF000000" />
-        <pixel index="85" colour="0xFF000000" />
-        <pixel index="86" colour="0xFF000000" />
-        <pixel index="87" colour="0xFF000000" />
+        <pixel index="85" colour="0xFF00005B" />
+        <pixel index="86" colour="0xFF0101AD" />
+        <pixel index="87" colour="0xFF00005B" />
         <pixel index="88" colour="0xFF000000" />
         <pixel index="89" colour="0xFF000000" />
         <pixel index="90" colour="0xFF000000" />
