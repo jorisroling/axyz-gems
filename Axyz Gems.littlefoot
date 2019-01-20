@@ -1,9 +1,9 @@
 /*
-<metadata description="Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (initial) page, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. The actual CC's are (per page X, Y and Z respectively): Page 1 (orange dot): CC3, CC11 and CC14 (especially nice for U-He plugins). Page 2 (red dot): CC20, CC21 and CC22. Page 3 (green dot): CC23, CC24 and CC25. Page 4 (blue dot): CC26, CC27 and CC28. Page 5 (magenta dot): CC29, CC30 and CC31. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the page, but at any time other pages are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
+<metadata description="Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. The actual CC's are (per gem X, Y and Z respectively): Gem 1 (orange): CC3, CC11 and CC14 (especially nice for U-He plugins). Gem 2 (red): CC20, CC21 and CC22. Gem 3 (green): CC23, CC24 and CC25. Gem 4 (blue): CC26, CC27 and CC28. Gem 5 (pink): CC29, CC30 and CC31. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
           target="Lightpad"
           tags="MIDI;Controller;">
     <variables>
-        <variable name="page" displayName="Primary Gem (first touch)" type="int" min="0" max="4" value="1" displayMode="stepper"/>
+        <variable name="gem" displayName="Primary Gem" type="int" min="1" max="5" value="1" displayMode="stepper" tooltip="Gem that will be accessed by the first touch." />
         <variable name="highres" displayName="High resolution" type="bool" value="true" tooltip="If this option is turned on the sent values will also be counter parted with the extra LSB CC's, giving them a much higher resolution (0 - 16383 instead of 0 - 127)"/>
         <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on"/>
         <variable name="zscale" displayName="Z Scale" type="float" value="0.4" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z (pressure)" displayMode="bipolar"/>
@@ -12,7 +12,7 @@
 
         <variable name="send" displayName="Send" type="option" value="X" options="All;X;Y;Z;" tooltip="Which parts of a touch should be sent" visible="false"/>
         <variable name="beat" displayName="Show beat dot" type="bool" value="false" visible="false"/>
-        <variable name="configMode" displayName="Config mode" type="bool" value="false" visible="false"/>
+        <variable name="setup" displayName="Setup page" type="bool" value="false" visible="false"/>
 
 	    <vector count="5" wantsGetFunctions="true" wantsSetFunctions="true">
             <variable name="xCC" type="int" value="1" visible="false"/>
@@ -29,18 +29,17 @@
 </metadata>
 */
 
-// heapsize: (pages * axes * bytes)
+// heapsize: (gems * axes * bytes)
 #heapsize: (5 * 3 * 2)
 
 
 /*
  * Heap layout is as follows:
- * Pages 0 - 4, per axis (x,y,z) 2 bytes
+ * gems 0 - 4, per axis (x,y,z) 2 bytes
  *    byte 0 MSB
  *    byte 1 LSB
  *
  */
-
 
 
 bool gammaCorrected;
@@ -207,20 +206,20 @@ void handleTouch (int index, float x, float y, float z)
     }
 }
 
-void handleConfig(float x, float y)
+void handleSetup(float x, float y)
 {
     int px = int(map(x, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
     int py = int(map(y, 0.0 + 0.07, 2.0 - 0.07,0.0,14.0));
     int pg = -1;
     if (py < 6 ) {
-        if (px < 5) {
+        if (px < 6) {
             send = 1;
         } else if (px < 10) {
             send = 2;
         } else if (px < 15) {
             send = 3;
         }
-    } else if (py < 10) {
+    } else if (py < 11) {
         if (px < 8) {
             pg = 1;
 
@@ -237,40 +236,40 @@ void handleConfig(float x, float y)
         }
     }
     if (pg>=0) {
-        page = pg;
+        gem = pg + 1;
          if (highres) {
-             if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page)+32, 64);
-             if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page)+32, 64);
-             if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page)+32, 64);
+             if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(pg)+32, 64);
+             if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(pg)+32, 64);
+             if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(pg)+32, 64);
          }
-        if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(page), 64);
-        if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(page), 64);
-        if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(page), 64);
+        if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(pg), 64);
+        if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(pg), 64);
+        if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(pg), 64);
     }
 }
 
 void touchStart (int index, float x, float y, float z, float vz)
 {
-    if (configMode) {
-        handleConfig(x,y);
+    if (setup) {
+        handleSetup(x,y);
     } else {
         if (index <= 5) {
-            int p = ((page + index) - 1) % 5;
+            int p = (((gem - 1) + index) - 1) % 5;
             handleTouch (p, x, y, z);
-//            fadePressureMap();
+            fadePressureMap();
         }
     }
 }
 
 void touchMove (int index, float x, float y, float z, float vz)
 {
-    if (configMode) {
-        handleConfig(x,y);
+    if (setup) {
+        handleSetup(x,y);
     } else {
         if (index <= 5) {
-            int p = ((page + index) - 1) % 5;
+            int p = (((gem - 1) + index) - 1) % 5;
             handleTouch (p, x, y, z);
-//            fadePressureMap();
+            fadePressureMap();
         }
     }
 }
@@ -285,35 +284,35 @@ void drawDot(int c,int a,int x,int y)
 }
 
 
-int getColourVariation(int page)
+int getColourVariation(int index)
 {
     int rnd;
-    int max = (page == 0 || page == 4) ? 12 : 32;
+    int max = (index == 0 || index == 4) ? 12 : 32;
     if (clockCounter>=0) {
         if (beat4) {
             rnd = getRandomInt(max);
-            setRnd(page,rnd);
+            setRnd(index,rnd);
         } else {
-            rnd = getRnd(page);
+            rnd = getRnd(index);
         }
     } else {
         if (!(repaintCounter % 25)) {
             rnd = getRandomInt(max);
-            setRnd(page,rnd);
+            setRnd(index,rnd);
         } else {
-            rnd = getRnd(page);
+            rnd = getRnd(index);
         }
     }
 
-    int hue = (getHue(page) + (rnd-(max/2)));
+    int hue = (getHue(index) + (rnd-(max/2)));
     if (hue>255) hue-=255;
     if (hue<0) hue+=255;
     return makeARGBfromAHSV(0,hue,rnd+(255-max),rnd+(255-max));
 }
 
-int getColour(int page)
+int getColour(int index)
 {
-    int hue = getHue(page);
+    int hue = getHue(index);
     if (hue>255) hue-=255;
     if (hue<0) hue+=255;
     return makeARGBfromAHSV(0,hue,0xFF,0xFF);
@@ -321,14 +320,14 @@ int getColour(int page)
 
 void repaint()
 {
-    fillRect (getBackground(page), 0, 0, 15, 15);
+    fillRect (getBackground((gem - 1)), 0, 0, 15, 15);
 
     if (buttonStamp && (repaintCounter - buttonStamp) > 12) {
-        configMode = !configMode;
+        setup = !setup;
         buttonStamp = 0;
     }
 
-    if (configMode) {
+    if (setup) {
 
         int xo = 2;
         int yo = 1;
@@ -385,26 +384,26 @@ void repaint()
                 setFlame(p,flame);
             }
             float xf = map(((2.0/5)*p)+0.2, 0.0, 2.0, 0.07, 2.0 - 0.14);
-            float yf = (p % 2) ? 1.0 : 1.5;
+            float yf = (p % 2) ? 1.1 : 1.65;
             addPressurePoint(getColourVariation(p), xf, yf, (((4 ) * 5.0) + (flame * 5)) + (0.3 * 75.0) );
-            if (p == page) {
+            if (p == (gem - 1)) {
                 blendCircle(0xFFFFFFFF,xf * 7.5, yf * 7.5, 0.4, true);
             }
 
         }
         fadePressureMap();
     } else {
-        if (page == 1) {
-            drawDot(getColour(page), 0x4F, 0, 0);
-        } else if (page == 2) {
-            drawDot(getColour(page), 0x4F, 0, 14);
-        } else if (page == 3) {
-            drawDot(getColour(page), 0x4F, 14, 0);
-        } else if (page == 4) {
-            drawDot(getColour(page), 0x4F, 14, 14);
+        if (gem == 2) {
+            drawDot(getColour(gem-1), 0x4F, 0, 0);
+        } else if (gem == 3) {
+            drawDot(getColour(gem-1), 0x4F, 0, 14);
+        } else if (gem == 4) {
+            drawDot(getColour(gem-1), 0x4F, 14, 0);
+        } else if (gem == 5) {
+            drawDot(getColour(gem-1), 0x4F, 14, 14);
         }
         for (int o=4; o>=0; o--) {
-            int p = (page + o) % 5;
+            int p = ((gem - 1) + o) % 5;
 
             float flame = getFlame(p);
             if (clockCounter>=0) {
@@ -448,7 +447,7 @@ void repaint()
         fadePressureMap();
 
         for (int o=4; o>=0; o--) {
-            int p = (page + o) % 5;
+            int p = ((gem - 1) + o) % 5;
 
             int x = getHeapByte( (p * 3 * 2) + 0 + 0 );
             int y = getHeapByte( (p * 3 * 2) + 1 + 0 );
@@ -471,8 +470,8 @@ void repaint()
 }
 
 void handleButtonDown(int index) {
-    if (configMode) {
-        configMode = false;
+    if (setup) {
+        setup = false;
     } else {
         buttonStamp = repaintCounter;
     }
@@ -481,7 +480,7 @@ void handleButtonDown(int index) {
 
 void handleButtonUp(int index) {
     if ((repaintCounter - buttonStamp) <=12) {
-        page = page >= 4 ? 0 : page + 1;
+        gem = gem >= 5 ? 1 : gem + 1;
     }
     buttonStamp = 0;
 }
