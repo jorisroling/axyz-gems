@@ -8,5 +8,11 @@ For every finger (page actually) it shows a pulsing (on the beat if available) g
 The arrangement of pages is as follows:
 
 | Page | Colour | CC X | CC Y | CC Z |
-| -----|:------:|:------:|:------:| ----:|
-| 0    | orange | 3 | 11 | 14 |
+|:----:|:------:|:----:|:----:| :---:|
+|   0  | orange |   3  |  11  |  14  |
+|   1  |  red   |  20  |  21  |  22  |
+|   2  |  green |  23  |  24  |  25  |
+|   3  |  blue  |  26  |  27  |  28  |
+|   4  |  pink  |  29  |  30  |  31  |
+
+The high-resolution option will send out two CC's per dimension per page, as such increasing the rsolution. This is done according to the MIDI specification by sending out an extra CC (called LSB) for every value (called MSB). Most modern DAW's understand this mode (double CC's) as 14-bit CC's.
