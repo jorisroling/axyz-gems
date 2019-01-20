@@ -257,7 +257,7 @@ void touchStart (int index, float x, float y, float z, float vz)
         if (index <= 5) {
             int p = ((page + index) - 1) % 5;
             handleTouch (p, x, y, z);
-            fadePressureMap();
+//            fadePressureMap();
         }
     }
 }
@@ -270,7 +270,7 @@ void touchMove (int index, float x, float y, float z, float vz)
         if (index <= 5) {
             int p = ((page + index) - 1) % 5;
             handleTouch (p, x, y, z);
-            fadePressureMap();
+//            fadePressureMap();
         }
     }
 }
