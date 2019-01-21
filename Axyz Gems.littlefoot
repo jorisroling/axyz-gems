@@ -76,7 +76,7 @@ void initialise()
 
     setLocalConfig (33, 1);
     gammaCorrected = getLocalConfig (33);
-    setXCC(0,3);
+    setXCC(0,2);
     setYCC(0,11);
     setZCC(0,14);
     setHeapByte( ( 0 * 3 * 2) + 0 + 0, 64);
