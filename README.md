@@ -1,4 +1,4 @@
-# Axyz Gems v1.1
+# Axyz Gems v1.2
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 This LittleFoot script will turn a **ROLI Lightpad Block** into a high-res multi XY surface. Multi as in five times... for five fingers... at the same time!
@@ -13,7 +13,7 @@ To see the gems operate bi-directional, make sure the mapped control values are 
 
 The arrangement of gems is as follows:
 
-| Gem  | Colour | Indicator | CC X | CC Y | CC Z | 
+| Gem  | Colour | Indicator | CC X | CC Y | CC Z |
 |:----:|:------:|:---------:|:----:|:----:| :---:|
 |   1  | orange |    none   |   2  |  11  |  14  |
 |   2  |  red   |     NE    |  20  |  21  |  22  |
@@ -23,7 +23,7 @@ The arrangement of gems is as follows:
 
 ## Operation
 
-Use one to five fingers at once to place & move the gems on the pad. The first touch will correspond to the **Primary Gem** (default is 1: orange).Increasing the pressure will scale the gems outward (positive **Z Scale**) or inward (negative **Z Scale**). 
+Use one to five fingers at once to place & move the gems on the pad. The first touch will correspond to the **Primary Gem** (default is 1: orange).Increasing the pressure will scale the gems outward (positive **Z Scale**) or inward (negative **Z Scale**).
 
 Pressing the **Side Button** shortly will advance (and possibly wrap around) the **Primary Gem**, shown by the **Indicator** (see table above).
 
