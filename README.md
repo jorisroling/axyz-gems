@@ -48,4 +48,4 @@ To access the setup page, hold down the side button for a while. You' ll be pres
 
 ## Installation
 
-To install this script save (only) the **Axyz Gems.littlefoot** script (<a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Axyz%20Gems.littlefoot" download>here</a>)  in the default **ROLI Blocks Littlefoot** location of your platform (On Macos this is **~/Documents/ROLI/LittleFoot**). Now whenever you start the **ROLI Dashboard**, you will see the **Axyz Gems** app next to the default apps. Select it, and start tweaking... Enjoy! 😊
+To install this script save (only) the **Axyz Gems.littlefoot** script (<a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Axyz%20Gems.littlefoot" target="_blank">here</a>)  in the default **ROLI Blocks Littlefoot** location of your platform (On Macos this is **~/Documents/ROLI/LittleFoot**). Now whenever you start the **ROLI Dashboard**, you will see the **Axyz Gems** app next to the default apps. Select it, and start tweaking... Enjoy! 😊
