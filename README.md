@@ -5,7 +5,7 @@ This LittleFoot script will turn a **ROLI Lightpad Block** into a high-res multi
 
 For every finger (touch) it shows a pulsing (on the beat if available) gem in a bright colour. The position of these  gems are translated into MIDI Control Changes which can be mapped to anything in modern DAW's (Digital Audio Workstations) such as Ableton Live. A setup page on the device itself facilitates the easy creation of this kind of mappings.
 
-I created this script because I really enjoy the plugins by U-he (Hive & Zebra2 in particular). These plugins have very nice XY controls which I map through Ableton Live (with Absolute 14-bit precision). These plugins also have CC 3 (breath) and CC 11 (expression) mapped as extra controllers, so the first gem (orange) uses these.
+I created this script because I really enjoy the plugins by U-he (Hive & Zebra2 in particular). These plugins have very nice XY controls which I map through Ableton Live (with Absolute 14-bit precision). These plugins also have CC 2 (breath) and CC 11 (expression) mapped as extra controllers, so the first gem (orange) uses these.
 
 To see the gems operate bi-directional, make sure the mapped control values are send back to the device. In case of Ableton Live, ensure the **Remote** option is selected with your **Output: Lightpad Block** MIDI setup. If you like to see the gems pulsing on the beat, make sure **Sync** is selected as-well.
 
