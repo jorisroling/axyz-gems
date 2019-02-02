@@ -1,4 +1,4 @@
-# Axyz Gems v1.3
+# Axyz Gems v1.4
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 This LittleFoot script will turn a **ROLI Lightpad Block** into a high-res multi XY surface. Multi as in five times... for five fingers... at the same time!
@@ -41,6 +41,8 @@ The **High resolution** option will (when selected) send out two CC's per dimens
 
 The **MIDI Channel** determines the MIDI channel used for sending the CC's.
 
+The **Recorder** offers a *Per Beat* option, which will hold and playback all the values per beat. (This option might expand in the future)
+A large beat counter will show up, and advance. For this option to work, a MIDI clock signal should be sent to the **Lightpad Block**, as it needs to know the beat.
 
 <!---## Setup Page
 
