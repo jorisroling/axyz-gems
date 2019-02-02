@@ -1,4 +1,4 @@
-# Axyz Gems v1.4
+# Axyz Gems v1.5
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 This LittleFoot script will turn a **ROLI Lightpad Block** into a high-res multi XY surface. Multi as in five times... for five fingers... at the same time!
