@@ -27,7 +27,7 @@
 
 
         <variable name="send" displayName="Send" type="option" value="X" options="All;X;Y;Z;" tooltip="Which parts of a touch should be sent" visible="false"/>
-        <variable name="beat" displayName="Show beat dot" type="bool" value="false" visible="false"/>
+        <variable name="beat" displayName="Show beat dot" type="bool" value="true" visible="false"/>
         <variable name="setup" displayName="Setup page" type="bool" value="false" visible="false"/>
 
         <variable name="dot1" displayName="Colour" group="gem1" type="colour" value="0xFFFF7F00"/>
@@ -56,7 +56,6 @@
         <variable name="zCC5" displayName="Z Axis CC" group="gem5" type="int" min="0" max="127" handleSetup="stepper" value="31" handleSetup="stepper" />
 
         <vector count="5" wantsGetFunctions="true" wantsSetFunctions="true">
-            <variable name="hue" type="int" value="0" visible="false"/>
             <variable name="flame" type="float" value="0.0" visible="false"/>
             <variable name="rnd" type="int" value="0" visible="false"/>
         </vector>
@@ -67,12 +66,11 @@
 
 
 // heapsize: (gems * axes * bytes)
-#heapsize: (5 * 3 * 2)
-
+#heapsize: (5 * 3 * 2) + ((5 * 3 * 2) * 4)
 
 /*
  * Heap layout is as follows:
- * gems 0 - 4, per axis (x,y,z) 2 bytes
+ * gems 0 - 4, per axyz (x,y,z) 2 bytes
  *    byte 0 MSB
  *    byte 1 LSB
  *
@@ -106,27 +104,31 @@ void initialise()
     beat16 = false;
 
 
-	for (int i = 0; i < 32; ++i)
+	for (int i = 0; i < 32; ++i) {
         setLocalConfigActiveState (i, false, false);
-
+	}
+	
     setLocalConfig (33, 1);
     gammaCorrected = getLocalConfig (33);
 
-    setHue(0,30);
-    setHue(1,0);
-    setHue(2,85);
-    setHue(3,170);
-    setHue(4,212);
-
     for (int p=0; p<5; p++) {
-        setHeapByte( (p * 3 * 2) + (0 * 2) + 0, p ? 0x40 : 0xFF);
-        setHeapByte( (p * 3 * 2) + (0 * 2) + 1, p ? 0x00 : 0xFF);
-        setHeapByte( (p * 3 * 2) + (1 * 2) + 0, p ? 0x40 : 0xFF);
-        setHeapByte( (p * 3 * 2) + (1 * 2) + 1, p ? 0x00 : 0xFF);
-        setHeapByte( (p * 3 * 2) + (2 * 2) + 0, 0xFF);
-        setHeapByte( (p * 3 * 2) + (2 * 2) + 1, 0xFF);
+        setHeapByte( gemOffset(p, 0, 0), p ? 0x40 : 0xFF);
+        setHeapByte( gemOffset(p, 0, 1), p ? 0x00 : 0xFF);
+        setHeapByte( gemOffset(p, 1, 0), p ? 0x40 : 0xFF);
+        setHeapByte( gemOffset(p, 1, 1), p ? 0x00 : 0xFF);
+        setHeapByte( gemOffset(p, 2, 0), 0xFF);
+        setHeapByte( gemOffset(p, 2, 1), 0xFF);
     }
 }
+
+int gemOffset(int gem, int axyz, int signif)
+{
+    int result=0;
+    if (gem>=0 && gem<=4 && axyz >=0 && axyz<=2 && signif>=0 && signif<=1) {
+        result=(gem * 3 * 2) + (axyz * 2) + signif;
+    }
+    return result;
+}   
 
 int getXCC(int index)
 {
@@ -177,36 +179,36 @@ int getZCC(int index)
     v       - The value (brightness) in range 0 - 255 inclusive (1 byte)
     returns - a 32-bit colour
 */
-int makeARGBfromAHSV(int alpha, int h, int s, int v)
-{
-    // TODO: range safety for h, s, v parameters + test performance hit
-
-    // If grayscale:
-    if (s == 0)
-        return makeARGB(alpha, v, v, v);
-
-    int region     = h / 43;
-    int remainder  = h - (region * 43);   // range 0 - 42
-
-    int p, q, t;
-    p = v * (255 - s) / 255;
-    q = v * (255 - (s * remainder) / 43) / 255;
-    t = v * (255 - (s * (43 - remainder)) / 43) / 255;
-
-    if (region == 0)
-        return makeARGB(alpha, v, t, p);
-    else if (region == 1)
-        return makeARGB(alpha, q, v, p);
-    else if (region == 2)
-        return makeARGB(alpha, p, v, t);
-    else if (region == 3)
-        return makeARGB(alpha, p, q, v);
-    else if (region == 4)
-        return makeARGB(alpha, t, p, v);
-    else
-        return makeARGB(alpha, v, p, q);
-}
-
+// int makeARGBfromAHSV(int alpha, int h, int s, int v)
+// {
+//     // TODO: range safety for h, s, v parameters + test performance hit
+// 
+//     // If grayscale:
+//     if (s == 0)
+//         return makeARGB(alpha, v, v, v);
+// 
+//     int region     = h / 43;
+//     int remainder  = h - (region * 43);   // range 0 - 42
+// 
+//     int p, q, t;
+//     p = v * (255 - s) / 255;
+//     q = v * (255 - (s * remainder) / 43) / 255;
+//     t = v * (255 - (s * (43 - remainder)) / 43) / 255;
+// 
+//     if (region == 0)
+//         return makeARGB(alpha, v, t, p);
+//     else if (region == 1)
+//         return makeARGB(alpha, q, v, p);
+//     else if (region == 2)
+//         return makeARGB(alpha, p, v, t);
+//     else if (region == 3)
+//         return makeARGB(alpha, p, q, v);
+//     else if (region == 4)
+//         return makeARGB(alpha, t, p, v);
+//     else
+//         return makeARGB(alpha, v, p, q);
+// }
+// 
 float rotateX(float x, float y, float min, float max, int mode)
 {
     if (orientation == 1) {
@@ -271,11 +273,11 @@ int mapTouchToRange (float v, float inMin, float inMax, float outMax)
     return int (mapped < 0.0 ? 0.0 : (mapped > outMax ? outMax : mapped) );
 }
 
-void performCC (float v, int cc, float inMin, float inMax, bool invert, int axis, bool output, int index)
+void performCC (float v, int cc, float inMin, float inMax, bool invert, int axyz, bool output, int index)
 {
     int valueMSB = mapTouchToRange (v, inMin, inMax, 127.0);
     if (invert) valueMSB = 127 - valueMSB;
-    int offsetMSB = (index * 3 * 2) + (axis * 2) + 0;
+    int offsetMSB = gemOffset(index, axyz, 0); // (index * 3 * 2) + (axyz * 2) + 0;
     int oldMSB = getHeapByte(offsetMSB);
     if (oldMSB != valueMSB) {
         setHeapByte( offsetMSB, valueMSB);
@@ -284,7 +286,7 @@ void performCC (float v, int cc, float inMin, float inMax, bool invert, int axis
 
     int valueLSB = ((mapTouchToRange (v, inMin, inMax, 16383.0)) >> 7);
     if (invert) valueLSB = 127 - valueLSB;
-    int offsetLSB = (index * 3 * 2) + (axis * 2) + 1;
+    int offsetLSB = gemOffset(index, axyz, 1); // (index * 3 * 2) + (axyz * 2) + 1;
     int oldLSB = getHeapByte(offsetLSB);
     if (oldLSB != valueLSB) {
         setHeapByte( offsetLSB, valueLSB);
@@ -341,11 +343,11 @@ void handleSetup(float x, float y)
     }
     if (pg>=0) {
         gem = pg + 1;
-         if (highres) {
-             if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(pg)+32, 64);
-             if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(pg)+32, 64);
-             if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(pg)+32, 64);
-         }
+//          if (highres) {
+//              if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(pg)+32, 64);
+//              if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(pg)+32, 64);
+//              if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(pg)+32, 64);
+//          }
         if (send ==0 || send ==1) sendCC ((channel - 1), getXCC(pg), 64);
         if (send ==0 || send ==2) sendCC ((channel - 1), getYCC(pg), 64);
         if (send ==0 || send ==3) sendCC ((channel - 1), getZCC(pg), 64);
@@ -528,9 +530,9 @@ void drawGems()
             }
         }
 
-        int x = getHeapByte( (p * 3 * 2) + (0 * 2) + 0 );
-        int y = getHeapByte( (p * 3 * 2) + (1 * 2) + 0 );
-        int z = getHeapByte( (p * 3 * 2) + (2 * 2) + 0 );
+        int x = getHeapByte( gemOffset(p, 0, 0) );
+        int y = getHeapByte( gemOffset(p, 1, 0) );
+        int z = getHeapByte( gemOffset(p, 2, 0) );
 
         if (x > 127) continue;
         if (y > 127) continue;
@@ -559,8 +561,8 @@ void drawGems()
     for (int o=4; o>=0; o--) {
         int p = ((gem - 1) + o) % 5;
 
-        int x = getHeapByte( (p * 3 * 2) + (0 * 2) + 0 );
-        int y = getHeapByte( (p * 3 * 2) + (1 * 2) + 0 );
+        int x = getHeapByte( gemOffset(p, 0, 0) );
+        int y = getHeapByte( gemOffset(p, 1, 0) );
 
         if (x > 127) continue;
         if (y > 127) continue;
@@ -619,31 +621,31 @@ void handleMIDI(int byte0, int byte1, int byte2)
         if ( (channel - 1) == ch) {
             int cc = byte1;
             int value = byte2;
-            int offset=-1;
+            int ofst=-1;
             float x=-1;
             float y=-1;
             for (int p = 0; p < 5; p++) {
                 if (getXCC(p) == cc) {
-                    offset =(p * 3 * 2) + (0 * 2) + 0;
+                    ofst =gemOffset(p, 0, 0);
                     x = map(float(value), 0.0, 127.0, 0.0, 2.0);
-                    y = map(float(getHeapByte((p * 3 * 2) + (1 * 2) + 0)), 0.0, 127.0, 2.0, 0.0);
+                    y = map(float(getHeapByte(gemOffset(p, 1, 0))), 0.0, 127.0, 2.0, 0.0);
                 } else if (getYCC(p) == cc) {
-                    offset =  (p * 3 * 2) + (1 * 2) + 0;
-                    x = map(float(getHeapByte((p * 3 * 2) + (0 * 2) + 0)), 0.0, 127.0, 0.0, 2.0);
+                    ofst = gemOffset(p, 1, 0);
+                    x = map(float(getHeapByte(gemOffset(p, 0, 0))), 0.0, 127.0, 0.0, 2.0);
                     y = map(float(value), 0.0, 127.0, 2.0, 0.0);
                 } else if (getZCC(p) == cc) {
-                    offset = (p * 3 * 2) + (2 * 2) + 0;
+                    ofst = gemOffset(p, 2, 0);
                 } else if (getXCC(p) == (cc + 32) ) {
-                    offset = (p * 3 * 2) + (0 * 2) + 1;
+                    ofst = gemOffset(p, 0, 1);
                 } else if (getYCC(p) == (cc + 32)) {
-                    offset = (p * 3 * 2) + (1 * 2) + 1;
+                    ofst = gemOffset(p, 1, 1);
                 } else if (getZCC(p) == (cc + 32)) {
-                    offset = (p * 3 * 2) + (2 * 2) + 1;
+                    ofst = gemOffset(p, 2, 1);
                 }
            }
-           if (offset >= 0) {
-               if (getHeapByte(offset) != value) {
-                   setHeapByte(offset, value);
+           if (ofst >= 0) {
+               if (getHeapByte(ofst) != value) {
+                   setHeapByte(ofst, value);
                }
             }
         }
