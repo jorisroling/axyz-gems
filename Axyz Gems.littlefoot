@@ -329,9 +329,9 @@ void performCC (float v, int cc, float inMin, float inMax, bool invert, int axyz
 }
 
 
-void handleGem(int index, float x, float y, float z)
+void handleGem(int g, float x, float y, float z, float vz)
 {
-    if (index >= 0 && index < 5) {
+    if (g >= 0 && g < 5) {
         if (zscale != 0.0 && z >= zthreshold) {
             float scale = 1.0 + (zscale * ( 1.0 / ( (1.0 - zthreshold) / (z - zthreshold) ) ) );
 
@@ -339,11 +339,12 @@ void handleGem(int index, float x, float y, float z)
             y = min(max (((y - 1.0) * scale) + 1.0, 0.0), 2.0 - 0.07);
 
         }
-        performCC(x, getXCC(index), 0.0 + 7.0, 200.0 - 7.0, false, 0, true, index);
-        performCC(y, getYCC(index), 0.0 + 7.0, 200.0 - 7.0, true, 1, true, index);
-        performCC(z, getZCC(index), 0.0, 100.0, false, 2, true, index);
+        performCC(x, getXCC(g), 0.0 + 7.0, 200.0 - 7.0, false, 0, true, g);
+        performCC(y, getYCC(g), 0.0 + 7.0, 200.0 - 7.0, true, 1, true, g);
+        performCC(z, getZCC(g), 0.0, 100.0, false, 2, true, g);
     }
 }
+
 
 void handleSetup(float x, float y)
 {
@@ -387,12 +388,25 @@ void handleSetup(float x, float y)
     }
 }
 
-void handleTouch(int index, float x,  float y, float z)
+void handleTouch(int index, float x,  float y, float z, float vz)
 {
     if (index <= 5) {
-        int p = (((gem - 1) + index) - 1) % 5;
-        handleGem(p, x, y, z);
+        int g = (((gem - 1) + index) - 1) % 5;
+        handleGem(g, x, y, z, vz);
         fadePressureMap();
+    } else {
+        for (int g = 0; g < maxGems; g++) {
+            handleGem(g, 1.0, 1.0, 0.0, 0.0);
+        }
+        for (int s = 0; s < maxSamples; s++) {
+            for (int g = 0; g < maxGems; g++) {
+                for (int a = 0; a < maxAxyz; a++) {
+                    for (int b = 0; b < maxSignif; b++) {
+                        setHeapByte( heapOffset(s,g,a,b), 0xFF);
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -402,7 +416,7 @@ void touchStart (int index, float x, float y, float z, float vz)
     if (setup) {
         handleSetup(rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0));
     } else {
-        handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z);
+        handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z, vz);
     }
 }
 
@@ -411,7 +425,8 @@ void touchMove (int index, float x, float y, float z, float vz)
     if (setup) {
         handleSetup(rotateX(x, y, 0.0, 2.00, 0), rotateY(x, y, 0.0, 2.00, 0));
     } else {
-        handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z);
+        
+        handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z, vz);
     }
 }
 
@@ -640,8 +655,9 @@ void drawGems()
 
 void centerNumber(int value,int colour)
 {
-   drawNumber(value,colour,(value<100?3:0) + (value < 10 ? 3 : 0),4);
+   drawNumber(value,colour,(value<100?3:0) + (value < 10 ? 3 : 0) + (value == 1 ? -1 : 0),4);
 }
+
 
 void repaint()
 {
