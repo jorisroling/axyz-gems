@@ -674,10 +674,6 @@ void repaint()
 {
     fillRect (0xFF000000, 0, 0, 15, 15);
 
-    if (!setup && recordCount && sampleIndex>=0 && playing) {
-        centerNumber(sampleIndex + 1,0x7FFFFFFF);
-    }
-
     if (buttonStamp && (repaintCounter - buttonStamp) > 12) {
         setup = !setup;
         buttonStamp = 0;
@@ -687,6 +683,10 @@ void repaint()
         drawSetup();
     } else {
         drawGems();
+    }
+
+    if (!setup && recordCount && sampleIndex>=0 && playing) {
+        centerNumber(sampleIndex + 1,0x7FFFFFFF);
     }
 
     if (beat4) beat4 = false;
