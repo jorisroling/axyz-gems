@@ -51,3 +51,7 @@ To access the setup page, hold down the side button for a while. You' ll be pres
 ## Installation
 
 To install this script save (only) the **Axyz Gems.littlefoot** script (<a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Axyz%20Gems.littlefoot" target="_blank">here</a>)  in the default **ROLI Blocks Littlefoot** location of your platform (On Macos this is **~/Documents/ROLI/LittleFoot**). Now whenever you start the **ROLI Dashboard**, you will see the **Axyz Gems** app next to the default apps. Select it, and start tweaking... Enjoy! 😊
+
+### Heads up!
+
+It has come to my attention that some users download the **Axyz Gems.littlefoot** by right clicking the file (above) and selecting _download_ as an option. Saving that way will in fact dowload the container HTML file, and so it is impossible for **ROLI Dashboard** to upload the script to the **Lightpad BLOCK**. You will typicly be warned by an alert saying something like "Line 7, Column1: Found "<" when expecting a global variable or function". Please use the instructions above, or if you prefer, download the full release including these instructions by clicking [here](https://github.com/jorisroling/axyz-gems/releases/latest) and then click **Source code(zip)**. 
