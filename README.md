@@ -1,6 +1,16 @@
 # Axyz Gems v1.11
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
+##### Table of Contents
+[Introduction](#introduction)  
+[Control Changes](#control-changes)  
+[Operation](#operation)  
+[Parameters](#parameters)  
+[Installation](#installation)  
+[Heads up!](#heads-up)  
+
+## Introduction
+
 This LittleFoot script will turn a **ROLI Lightpad Block** into a high-res multi XY surface. Multi as in five times... for five fingers... at the same time!
 
 For every finger (touch) it shows a pulsing (on the beat if available) gem in a bright colour. The position of these  gems are translated into MIDI Control Changes which can be mapped to anything in modern DAW's (Digital Audio Workstations) such as Ableton Live. A setup page on the device itself facilitates the easy creation of this kind of mappings.
