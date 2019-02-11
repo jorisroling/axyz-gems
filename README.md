@@ -2,12 +2,12 @@
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
-[Introduction](#introduction)
-[Control Changes](#control-changes)
-[Operation](#operation)
-[Parameters](#parameters)
-[Installation](#installation)
-[Heads up!](#heads-up)
+[Introduction](#introduction)  
+[Control Changes](#control-changes)  
+[Operation](#operation)  
+[Parameters](#parameters)  
+[Installation](#installation)  
+[Heads up!](#heads-up)  
 
 ## Introduction
 
