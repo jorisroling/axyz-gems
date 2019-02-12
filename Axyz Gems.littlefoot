@@ -20,8 +20,8 @@
    <variables>
         <variable name="orientation" displayName="Orientation" type="option" value="Left Side Button" options="Left Side Button;Top Side Button;Right Side Button;Bottom Side Button;" tooltip="Orientation of device"/>
         <variable name="gem" displayName="Primary Gem" type="int" min="1" max="5" value="1" displayMode="stepper" tooltip="Gem that will be accessed by the first touch." />
-        <variable name="zscale" displayName="Z Scale" type="float" value="0.0" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z (pressure)" displayMode="bipolar"/>
-        <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.5" min="0.0" max="1.0" tooltip="How much Z (pressure) before scaling kicks in"/>
+        <variable name="zscale" displayName="Z Scale" type="float" value="0.65" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z (pressure)" displayMode="bipolar"/>
+        <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.75" min="0.0" max="1.0" tooltip="How much Z (pressure) before scaling kicks in"/>
         <variable name="highres" displayName="High resolution" type="bool" value="true" tooltip="If this option is turned on the sent values will also be counter parted with the extra LSB CC's, giving them a much higher resolution (0 - 16383 instead of 0 - 127)"/>
         <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on"/>
         <variable name="recorder" displayName="Recorder" type="option" value="None" options="None;4 Beats;8 Beats;" tooltip="Recorder setting"/>
@@ -331,7 +331,7 @@ void performCC (float v, int cc, float inMin, float inMax, bool invert, int axyz
 void handleGem(int g, float x, float y, float z, float vz)
 {
     if (g >= 0 && g < 5) {
-        if (zscale != 0.0 && z >= zthreshold) {
+        if (zscale != 0.0 && z > zthreshold && ( (1.0 - zthreshold) / (z - zthreshold) )  !=0 ) {
             float scale = 1.0 + (zscale * ( 1.0 / ( (1.0 - zthreshold) / (z - zthreshold) ) ) );
 
             x = min(max (((x - 1.0) * scale) + 1.0, 0.0), 2.0 - 0.07);
@@ -350,7 +350,7 @@ void handleSetup(float x, float y)
     int px = int(map(x, 0.07, 1.93, 0.0, 14.0));
     int py = int(map(y, 0.07, 1.93, 0.0, 14.0));
     int pg = -1;
-    
+
     if (px == 0) {
         if (py < 4) {
             beat = !beat;
@@ -372,7 +372,7 @@ void handleSetup(float x, float y)
             recordCount = 8;
             setup = false;
         }
-    } else {    
+    } else {
         if (py < 6 ) {
             if ( px < 6) {
                 send = 1;
@@ -470,17 +470,11 @@ void touchEnd(int index, float x, float y, float z, float vz)
 }
 
 void handleButtonDown(int index) {
-//     if (playback) {
-//         playback = false;
-//     } else if (touching) {
-//         playback = true;
-//     } else {
-         if (setup) {
-            setup = false;
-        } else {
-            buttonStamp = repaintCounter;
-        }
-//   }
+    if (setup) {
+        setup = false;
+    } else {
+        buttonStamp = repaintCounter;
+    }
 }
 
 
@@ -593,22 +587,22 @@ void drawSetup()
     drawDot(c, a, xo + 1, yo + 4);
     drawDot(c, a, xo + 2, yo + 4);
 
-    drawDot(c, 0x1F, 0, 1);
-    drawDot(c, 0x1F, 0, 2);    
-    drawDot(c, 0x1F, 0, 3);
-    
-    drawDot(c, 0x1F, 0, 5);
-    drawDot(c, 0x1F, 0, 6);
-    drawDot(c, 0x1F, 0, 7);
-    
-    drawDot(c, 0x1F, 14, 1);
-    drawDot(c, 0x1F, 14, 2);    
-    drawDot(c, 0x1F, 14, 3);
-    
-    drawDot(c, 0x1F, 14, 5);
-    drawDot(c, 0x1F, 14, 6);
-    drawDot(c, 0x1F, 14, 7);
-    
+    drawDot(0x00FF00FF, 0x4F, 0, 1);
+    drawDot(0x00FF00FF, 0x7F, 0, 2);
+    drawDot(0x00FF00FF, 0x4F, 0, 3);
+
+    drawDot(0x00FFFF00, 0x4F, 0, 5);
+    drawDot(0x00FFFF00, 0x7F, 0, 6);
+    drawDot(0x00FFFF00, 0x4F, 0, 7);
+
+    drawDot(0x000000FF, 0x4F, 14, 1);
+    drawDot(0x000000FF, 0x7F, 14, 2);
+    drawDot(0x000000FF, 0x4F, 14, 3);
+
+    drawDot(0x0000FFFF, 0x4F, 14, 5);
+    drawDot(0x0000FFFF, 0x7F, 14, 6);
+    drawDot(0x0000FFFF, 0x4F, 14, 7);
+
     drawPressureMap();
     for (int p = 0; p<5; p++) {
         float flame = getFlame(p);
@@ -616,7 +610,7 @@ void drawSetup()
             flame = getRandomFloat();
             setFlame(p,flame);
         }
-        float xf = map(((2.0/5)*p)+0.1, 0.0, 2.0, 0.07, 1.93);
+        float xf = map(((2.0 / 5)*p)+0.1, 0.0, 2.0, 0.07, 1.93);
         float yf = (p % 2) ? 1.1 : 1.65;
         addPressurePoint(getColourVariation(p), rotateX(xf, yf, 0.07, 1.93, 1), rotateY(xf, yf, 0.07, 1.93, 1), (((4 ) * 5.0) + (flame * 5)) + (0.3 * 75.0) );
         if (p == (gem - 1)) {
@@ -726,7 +720,7 @@ void repaint()
         }
         if (playback) {
            drawDot(0x0000FF, 0xFF, 7, 0);
-        }        
+        }
     }
 
 
@@ -874,6 +868,7 @@ void handleMIDI(int byte0, int byte1, int byte2)
         playing = true;
     } else if (byte0 == 252) { // MIDI stop
         playing = false;
+
     }
 }
 
@@ -1109,3 +1104,4 @@ void handleMIDI(int byte0, int byte1, int byte2)
     </pixels>
 </display>
 */
+
