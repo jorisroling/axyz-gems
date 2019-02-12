@@ -71,10 +71,12 @@ function init() {
 
     parameter.addValueObserver (function (value) {
       const idx = (diverge ? rev_XY_MAP[i] : i);
-      println('parameter '+ (diverge ? rev_XY_MAP[i] : i)  + ' = '+value);
+/*      println('parameter '+ (diverge ? rev_XY_MAP[i] : i)  + ' = '+value);*/
 
-      sendMidi(0xB0,AXYZ_CC_MSB[idx],((value * 16383) >> 7) & 0x7F);
-      if (highRes) sendMidi(0xB0,AXYZ_CC_LSB[idx],((value * 16383) >> 0) & 0x7F);
+      if (values[idx] != (value * 16383)) {
+        sendMidi(0xB0,AXYZ_CC_MSB[idx],((value * 16383) >> 7) & 0x7F);
+        if (highRes) sendMidi(0xB0,AXYZ_CC_LSB[idx],((value * 16383) >> 0) & 0x7F);
+      }
     });
   }
 
