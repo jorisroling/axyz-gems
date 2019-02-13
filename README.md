@@ -1,4 +1,4 @@
-# Axyz Gems v1.13
+# Axyz Gems v1.14
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
@@ -8,6 +8,7 @@
 [Parameters](#parameters)  
 [Installation](#installation)  
 [Heads up!](#heads-up)  
+[Integration](#integration)  
 
 ## Introduction
 
@@ -19,7 +20,6 @@ I created this script because I really enjoy the plugins by U-he (Hive & Zebra2 
 
 To see the gems operate bi-directional, make sure the mapped control values are send back to the device. In case of Ableton Live, ensure the **Remote** option is selected with your **Output: Lightpad Block** MIDI setup. If you like to see the gems pulsing on the beat, make sure **Sync** is selected as-well.
 
-For Bitwig I have included the **Axyz Gems.flexi** file that can be used as import for the brilliant **Generic Flexi** controller by [Jürgen Moßgraber](http://www.mossgrabers.de/Software/Bitwig/Bitwig.html). Any selected device page parameter will now be controlled by the Gems. Works great with XY device pages for U-He Hive & Zebra2.
 
 ## Control Changes
 
@@ -45,6 +45,8 @@ Pressing the **SideButton** a bit longer will open the **Setup Page** from which
 
 The **Orientation** give the (generally missing) option to have your ROLI Lightpad Block oriented in any way. This is especially handy if you combine the Lightpad Block with the Seaboard Block, and want to have it connected Seaboard Block left and Lightpad Block right. Without this option the **Side Button** would be obstructed.
 
+The **Active Gems**  determine which gems are accesible. So 'All gems' will work with the full 5 gems, and 'Only Gem 3' will work only with Gem 3. The last option 'Only Gems 2-5' is handy if you want only the last 4 gems to access 4 XY pads in your software.
+
 The **Primary Gem** determines which gem is selected by the first touch (finger), the next gem is accessible by the second touch, etc.
 
 If the option **Z Scale** allows pressure to influence (amplify) the actual position of the gem. The **Z Threshold** determines to amount of pressure needed before the scaling kicks in.
@@ -64,3 +66,17 @@ To install this script save (only) the **Axyz Gems.littlefoot** script (<a href=
 ### Heads up!
 
 It has come to my attention that some users download the **Axyz Gems.littlefoot** by right clicking the file (above) and selecting _download_ as an option. Saving that way will in fact dowload the container HTML file, and so it is impossible for **ROLI Dashboard** to upload the script to the **Lightpad BLOCK**. You will typicly be warned by an alert saying something like "Line 7, Column1: Found "<" when expecting a global variable or function". Please use the instructions above, or if you prefer, download the full release including these instructions by clicking [here](https://github.com/jorisroling/axyz-gems/releases/latest) and then click **Source code(zip)**.
+
+## Integration
+
+For enjoy the full joy of **Axyz Gems**, including high-resolution, there are dedicated Controller Surface scripts for Bitwig and Ableton.
+
+### Bitwig
+
+For Bitwig copy the **Bitwig/Axyz.Gems.control.js** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/Axyz.Gems.control.js" target="_blank">here</a>) to your **Documents/Bitwig Studio/Controller Scripts** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems (by Joris Röling)**, set the MIDI in and out to **Lightpad** or **Seaboard**) and your good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5.
+
+As an alternative I have included the **Bitwig/Axyz Gems.flexi** file that can be used as import for the brilliant **Generic Flexi** controller by [Jürgen Moßgraber](http://www.mossgrabers.de/Software/Bitwig/Bitwig.html). Any selected device page parameter will now be controlled by the Gems. Works great with XY device pages for U-He Hive & Zebra2.
+
+### Ableton
+
+For Ableton copy the entire **Ableton/Axyz_Gems** folder to your **MIDI Remote Scripts** folder. Start Ableton, go to **Preferences** -> **Link MIDI**, select **Axyz Gems** in an empty **Control Surface** slot, select **Lightpad** or **Seaboard** in **Input** and **Output** and your good to go. The 8 macro knobs of a selected grouped device will be mapped to Gems 2 - 5.

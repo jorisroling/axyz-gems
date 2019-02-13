@@ -1,5 +1,5 @@
 /*
-<metadata description="v1.13 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.13 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. The actual CC's are (per gem X, Y and Z respectively): Gem 1 (orange): CC2, CC11 and CC14 (especially nice for U-He plugins). Gem 2 (red): CC20, CC21 and CC22. Gem 3 (green): CC23, CC24 and CC25. Gem 4 (blue): CC26, CC27 and CC28. Gem 5 (pink): CC29, CC30 and CC31. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
+<metadata description="v1.14 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.14 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. The actual CC's are (per gem X, Y and Z respectively): Gem 1 (orange): CC2, CC11 and CC14 (especially nice for U-He plugins). Gem 2 (red): CC20, CC21 and CC22. Gem 3 (green): CC23, CC24 and CC25. Gem 4 (blue): CC26, CC27 and CC28. Gem 5 (pink): CC29, CC30 and CC31. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
           target="Lightpad"
           tags="MIDI;Controller;">
 
@@ -19,7 +19,8 @@
 
    <variables>
         <variable name="orientation" displayName="Orientation" type="option" value="Left Side Button" options="Left Side Button;Top Side Button;Right Side Button;Bottom Side Button;" tooltip="Orientation of device"/>
-        <variable name="gem" displayName="Primary Gem" type="int" min="1" max="5" value="1" displayMode="stepper" tooltip="Gem that will be accessed by the first touch." />
+        <variable name="active" displayName="Active Gems" type="option" value="All Gems" options="All Gems;Only Gem 1;Only Gem 2;Only Gem 3;Only Gem 4;Only Gem 5;Only Gems 2-5" tooltip="Active Gems"/>
+        <variable name="primary" displayName="Primary Gem" type="int" min="1" max="5" value="1" displayMode="stepper" tooltip="Gem that will be accessed by the first touch." />
         <variable name="zscale" displayName="Z Scale" type="float" value="0.65" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z (pressure)" displayMode="bipolar"/>
         <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.75" min="0.0" max="1.0" tooltip="How much Z (pressure) before scaling kicks in"/>
         <variable name="highres" displayName="High resolution" type="bool" value="true" tooltip="If this option is turned on the sent values will also be counter parted with the extra LSB CC's, giving them a much higher resolution (0 - 16383 instead of 0 - 127)"/>
@@ -137,6 +138,8 @@ void initialise()
     playback = false;
     recordCount = ((recorder == 1) ? 4 : ((recorder == 2) ? 8 : 0));
 
+    ensurePrimariIsActive();
+
 	for (int i = 0; i < 32; ++i) {
         setLocalConfigActiveState (i, false, false);
 	}
@@ -145,6 +148,57 @@ void initialise()
     gammaCorrected = getLocalConfig (33);
 
     clearData();
+}
+
+/* gem is 1-based */
+bool isActive(int gem) {
+    if (active == 0) { // All
+        if (gem >= 1 && gem <= 5) return true;
+    } else if (active == 1) { // Gem 1
+        if (gem == 1) return true;
+    } else if (active == 2) { // Gem 2
+        if (gem == 2) return true;
+    } else if (active == 3) { // Gem 3
+        if (gem == 3) return true;
+    } else if (active == 4) { // Gem 4
+        if (gem == 4) return true;
+    } else if (active == 5) { // Gem 5
+        if (gem == 5) return true;
+    } else if (active == 6) { // Gems 2-5
+        if (gem >= 2 && gem <= 5) return true;
+    }
+    return false;
+}
+
+/* index is 1-based */
+int index2gem(int index) {
+    int result = 0;
+    if (active == 0) { // All
+        if (index >= 1 && index <= 5) result = index;
+    } else if (active == 1) { // Gem 1
+        if (index == 1) result = 1;
+    } else if (active == 2) { // Gem 2
+        if (index == 1) result = 2;
+    } else if (active == 3) { // Gem 3
+        if (index == 1) result = 3;
+    } else if (active == 4) { // Gem 4
+        if (index == 1) result = 4;
+    } else if (active == 5) { // Gem 5
+        if (index == 1) result = 5;
+    } else if (active == 6) { // Gems 2-5
+        if (index >= 1 && index <= 4) result = index + 1;
+    }
+
+    if (result) {
+        result = ((((active == 0?(primary - 1):(active == 6?(primary - 2):0)) + result) - 1) % 5) + 1;
+        int count=0;
+        while (!isActive(result) && count<maxGems) {
+            count++;
+            result++;
+        }
+    }
+
+    return result;
 }
 
 int getXCC(int index)
@@ -356,18 +410,22 @@ void handleSetup(float x, float y)
             beat = !beat;
             setup = false;
         } else if (py < 8) {
+            clearData();
+            setup = false;
+        } else if (py < 12) {
+        }
+    } else if (px == 14) {
+        if (py < 4) {
             recorder = 0;
             recordCount = 0;
             sampleIndex = 0;
             playing = false;
             setup = false;
-        }
-    } else if (px == 14) {
-        if (py < 4) {
+        } else if (py < 8) {
             recorder = 1;
             recordCount = 4;
             setup = false;
-        } else if (py < 8) {
+        } else if (py < 12) {
             recorder = 2;
             recordCount = 8;
             setup = false;
@@ -398,8 +456,8 @@ void handleSetup(float x, float y)
             }
         }
     }
-    if (pg>=0) {
-        gem = pg + 1;
+    if (pg>=0 && isActive(pg+1)) {
+        primary = pg + 1;
         /* only send the MSB values */
         if (send ==0 || send ==1) sendCC((channel - 1), getXCC(pg), 64);
         if (send ==0 || send ==2) sendCC((channel - 1), getYCC(pg), 64);
@@ -422,9 +480,9 @@ void clearData()
 
 void handleTouch(int index, float x,  float y, float z, float vz)
 {
-    if (index <= 5) {
-        int g = (((gem - 1) + index) - 1) % 5;
-        handleGem(g, x, y, z, vz);
+    int gem = index2gem(index);
+    if (gem) {
+        handleGem(gem-1, x, y, z, vz);
         fadePressureMap();
     }
 }
@@ -432,38 +490,38 @@ void handleTouch(int index, float x,  float y, float z, float vz)
 void touchStart (int index, float x, float y, float z, float vz)
 {
     touching ++;
-    if (index >= 1 && index <= 5) {
+    if (index >= 1 && index <= 5 && index2gem(index)) {
         touchBits = touchBits | (1 << (index - 1));
-//         log(touchBits);        log(touchBits);
-    }
-    if (!setup) {
-        handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z, vz);
+//         log(touchBits);
+        if (!setup) {
+            handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z, vz);
+        }
     }
 }
 
 void touchMove (int index, float x, float y, float z, float vz)
 {
-    if (index >= 1 && index <= 5) {
+    if (index >= 1 && index <= 5 && index2gem(index)) {
         touchBits = touchBits | (1 << (index - 1));
 //            log(touchBits);
-    }
-    if (!setup) {
-        handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z, vz);
+        if (!setup) {
+            handleTouch(index, rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.0, 0), z, vz);
+        }
     }
 }
 
 void touchEnd(int index, float x, float y, float z, float vz)
 {
     touching --;
-    if (index >= 1 && index <= 5) {
+    if (index >= 1 && index <= 5 && index2gem(index)) {
         touchBits = touchBits &  ~(1 << (index - 1));
-//         log(touchBits);        log(touchBits);
+//         log(touchBits);
         if (setup) {
             handleSetup(rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.00, 0));
         }
     } else {
-        for (int g = 0; g < maxGems; g++) {
-            handleGem(g, 1.0, 1.0, 0.0, 0.0);
+        for (int gem = 1; gem <= maxGems; gem++) {
+            if (isActive(gem)) handleGem(gem-1, 1.0, 1.0, 0.0, 0.0);
         }
         clearData();
     }
@@ -477,10 +535,18 @@ void handleButtonDown(int index) {
     }
 }
 
+void ensurePrimariIsActive() {
+    int count=0;
+    while (!isActive(primary) && count < maxGems) {
+        count++;
+        primary++;
+    }
+}
 
 void handleButtonUp(int index) {
     if ((repaintCounter - buttonStamp) <=12) {
-        gem = gem >= 5 ? 1 : gem + 1;
+        primary = primary >= 5 ? 1 : primary + 1;
+        ensurePrimariIsActive();
     }
     buttonStamp = 0;
 }
@@ -595,13 +661,21 @@ void drawSetup()
     drawDot(0x00FFFF00, 0x7F, 0, 6);
     drawDot(0x00FFFF00, 0x4F, 0, 7);
 
-    drawDot(0x000000FF, 0x4F, 14, 1);
-    drawDot(0x000000FF, 0x7F, 14, 2);
-    drawDot(0x000000FF, 0x4F, 14, 3);
+    drawDot(0x0000FFFF, 0x4F, 0, 9);
+    drawDot(0x0000FFFF, 0x7F, 0, 10);
+    drawDot(0x0000FFFF, 0x4F, 0, 11);
 
-    drawDot(0x0000FFFF, 0x4F, 14, 5);
-    drawDot(0x0000FFFF, 0x7F, 14, 6);
-    drawDot(0x0000FFFF, 0x4F, 14, 7);
+    drawDot(0x00FF0000, 0x4F, 14, 1);
+    drawDot(0x00FF0000, 0x7F, 14, 2);
+    drawDot(0x00FF0000, 0x4F, 14, 3);
+
+    drawDot(0x0000FF00, 0x4F, 14, 5);
+    drawDot(0x0000FF00, 0x7F, 14, 6);
+    drawDot(0x0000FF00, 0x4F, 14, 7);
+
+    drawDot(0x000000FF, 0x4F, 14, 9);
+    drawDot(0x000000FF, 0x7F, 14, 10);
+    drawDot(0x000000FF, 0x4F, 14, 11);
 
     drawPressureMap();
     for (int p = 0; p<5; p++) {
@@ -613,7 +687,7 @@ void drawSetup()
         float xf = map(((2.0 / 5)*p)+0.1, 0.0, 2.0, 0.07, 1.93);
         float yf = (p % 2) ? 1.1 : 1.65;
         addPressurePoint(getColourVariation(p), rotateX(xf, yf, 0.07, 1.93, 1), rotateY(xf, yf, 0.07, 1.93, 1), (((4 ) * 5.0) + (flame * 5)) + (0.3 * 75.0) );
-        if (p == (gem - 1)) {
+        if (p == (primary - 1)) {
             xf *= 7.5;
             yf *= 7.5;
             blendCircle(0xFFFFFFFF,rotateX(xf, yf, 0.0, 15.0, 1), rotateY(xf, yf, 0.0, 15.0, 1), 0.4, true);
@@ -626,17 +700,17 @@ void drawSetup()
 
 void drawGems()
 {
-    if (gem == 2) {
-        drawDot(getColour(gem-1), 0x4F, 0, 0);
-    } else if (gem == 3) {
-        drawDot(getColour(gem-1), 0x4F, 0, 14);
-    } else if (gem == 4) {
-        drawDot(getColour(gem-1), 0x4F, 14, 0);
-    } else if (gem == 5) {
-        drawDot(getColour(gem-1), 0x4F, 14, 14);
+    if (primary == 2) {
+        drawDot(getColour(primary-1), 0x4F, 0, 0);
+    } else if (primary == 3) {
+        drawDot(getColour(primary-1), 0x4F, 0, 14);
+    } else if (primary == 4) {
+        drawDot(getColour(primary-1), 0x4F, 14, 0);
+    } else if (primary == 5) {
+        drawDot(getColour(primary-1), 0x4F, 14, 14);
     }
     for (int o=4; o>=0; o--) {
-        int p = ((gem - 1) + o) % 5;
+        int p = ((primary - 1) + o) % 5;
 
         float flame = getFlame(p);
         if (clockCounter>=0) {
@@ -676,7 +750,7 @@ void drawGems()
     fadePressureMap();
 
     for (int o=4; o>=0; o--) {
-        int p = ((gem - 1) + o) % 5;
+        int p = ((primary - 1) + o) % 5;
 
         int x = getHeapByte( heapOffset(0, p, 0, 0) );
         int y = getHeapByte( heapOffset(0, p, 1, 0) );
@@ -716,10 +790,10 @@ void repaint()
             centerNumber(sampleIndex + 1,0x7FFFFFFF);
         }
         if (beat && beat4) {
-           drawDot(0xFFFFFF, 0xFF, 0, 0);
+           drawDot(0xFFFFFF, 0xFF, 7, 0);
         }
         if (playback) {
-           drawDot(0x0000FF, 0xFF, 7, 0);
+           drawDot(0x0000FF, 0xFF, 7, 14); // ?
         }
     }
 
@@ -751,8 +825,6 @@ void handleMIDI(int byte0, int byte1, int byte2)
 {
     if ((byte0 & 240) == 176) { // MIDI Control Change
         if ((repaintCounter - performStamp) < 12) return; // prevent feedback
-        //return; // JJR
-        //
         int ch = byte0 & 15;
         if ( (channel - 1) == ch) {
             int cc = byte1;
@@ -761,22 +833,24 @@ void handleMIDI(int byte0, int byte1, int byte2)
             float x=-1;
             float y=-1;
             for (int p = 0; p < 5; p++) {
-                if (getXCC(p) == cc) {
-                    ofst =heapOffset(0, p, 0, 0);
-                    x = map(float(value), 0.0, 127.0, 0.0, 2.0);
-                    y = map(float(getHeapByte(heapOffset(0, p, 1, 0))), 0.0, 127.0, 2.0, 0.0);
-                } else if (getYCC(p) == cc) {
-                    ofst = heapOffset(0, p, 1, 0);
-                    x = map(float(getHeapByte(heapOffset(sampleIndex, p, 0, 0))), 0.0, 127.0, 0.0, 2.0);
-                    y = map(float(value), 0.0, 127.0, 2.0, 0.0);
-                } else if (getZCC(p) == cc) {
-                    ofst = heapOffset(0, p, 2, 0);
-                } else if (getXCC(p) == (cc + 32) ) {
-                    ofst = heapOffset(0, p, 0, 1);
-                } else if (getYCC(p) == (cc + 32)) {
-                    ofst = heapOffset(0, p, 1, 1);
-                } else if (getZCC(p) == (cc + 32)) {
-                    ofst = heapOffset(0, p, 2, 1);
+                if (isActive(p+1)) {
+                    if (getXCC(p) == cc) {
+                        ofst =heapOffset(0, p, 0, 0);
+                        x = map(float(value), 0.0, 127.0, 0.0, 2.0);
+                        y = map(float(getHeapByte(heapOffset(0, p, 1, 0))), 0.0, 127.0, 2.0, 0.0);
+                    } else if (getYCC(p) == cc) {
+                        ofst = heapOffset(0, p, 1, 0);
+                        x = map(float(getHeapByte(heapOffset(sampleIndex, p, 0, 0))), 0.0, 127.0, 0.0, 2.0);
+                        y = map(float(value), 0.0, 127.0, 2.0, 0.0);
+                    } else if (getZCC(p) == cc) {
+                        ofst = heapOffset(0, p, 2, 0);
+                    } else if (getXCC(p) == (cc + 32) ) {
+                        ofst = heapOffset(0, p, 0, 1);
+                    } else if (getYCC(p) == (cc + 32)) {
+                        ofst = heapOffset(0, p, 1, 1);
+                    } else if (getZCC(p) == (cc + 32)) {
+                        ofst = heapOffset(0, p, 2, 1);
+                    }
                 }
            }
            if (ofst >= 0) {
@@ -805,8 +879,10 @@ void handleMIDI(int byte0, int byte1, int byte2)
                                 int value = getHeapByte(heapOffset(s + 1,g,a,b));
                                 if (value > 0 && value <= 127) {
                                     if (getHeapByte(heapOffset(0,g,a,b)) != value) {
-                                        int cc = ((a == 0) ? getXCC(g) : ((a == 1) ? getYCC(g) : getZCC(g))) + (b * 32) ;
-                                        if (!b || (highres && cc >= 32 && cc < 64 ) ) sendCC((channel - 1), cc, value);
+                                        if (isActive(g+1)) {
+                                            int cc = ((a == 0) ? getXCC(g) : ((a == 1) ? getYCC(g) : getZCC(g))) + (b * 32) ;
+                                            if (!b || (highres && cc >= 32 && cc < 64 ) ) sendCC((channel - 1), cc, value);
+                                        }
                                         setHeapByte(heapOffset(0,g,a,b),value);
                                     }
                                 } else {
