@@ -23,10 +23,11 @@ var AXYZ_CC_LSB = [];
 for (var a = 0; a < AXYZ_CC_MSB.length; a++)
 if (AXYZ_CC_MSB[a] < 32) AXYZ_CC_LSB.push(AXYZ_CC_MSB[a] + 32)
 
-var XY_MAP = [0, 4, 1, 5, 2, 6, 3, 7];
-var rev_XY_MAP = [0, 2, 4, 6, 1,3, 5, 7];
-
 var BOOLEAN_OPTIONS = [ "Off", "On" ];
+var LAYOUT_COLUMNS_MAP = [0, 4, 1, 5, 2, 6, 3, 7];
+var REVERSE_LAYOUT_COLUMNS_MAP = [0, 2, 4, 6, 1,3, 5, 7];
+
+var LAYOUT_OPTIONS = [ "Rows", "Columns" ];
 
 function doObject (object, f)
 {
@@ -37,7 +38,7 @@ function doObject (object, f)
 }
 
 var highRes = true;
-var diverge = true;
+var layoutColumns = true;
 
 var translateWithMap = true;
 
@@ -47,31 +48,28 @@ function init() {
 
   preferences.getEnumSetting ("Enable", "High Resolution", BOOLEAN_OPTIONS, BOOLEAN_OPTIONS[1]).addValueObserver (function (value) {
     highRes = value == BOOLEAN_OPTIONS[1];
-    println('highRes = '+highRes);
   });
-  preferences.getEnumSetting ("Enable", "Diverge Mapping", BOOLEAN_OPTIONS, BOOLEAN_OPTIONS[1]).addValueObserver (function (value) {
-    diverge = value == BOOLEAN_OPTIONS[1];
-    println('diverge = '+diverge);
+  preferences.getEnumSetting ("Layout", "Button Order", LAYOUT_OPTIONS, LAYOUT_OPTIONS[0]).addValueObserver (function (value) {
+    layoutColumns = (value == LAYOUT_OPTIONS[1]);
   });
 
 
 
   host.getMidiInPort(0).setMidiCallback(handleMidi);
 
-  var cursorTrack = host.createCursorTrack("MOXF_CURSOR_TRACK", "Cursor Track", 0, 0, true);
+  var cursorTrack = host.createCursorTrack("AXYZ_GEMS_CURSOR_TRACK", "Cursor Track", 0, 0, true);
 
-  var cursorDevice = cursorTrack.createCursorDevice("MOXF_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION);
+  var cursorDevice = cursorTrack.createCursorDevice("AXYZ_GEMS_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION);
 
   remoteControlsBank = cursorDevice.createCursorRemoteControlsPage(8);
 
-  function para(i) {
+  function setupParameter(i) {
     const parameter = remoteControlsBank.getParameter(i);
     parameter.markInterested();
     parameter.setIndication(true);
 
-    parameter.addValueObserver (function (value) {
-      const idx = (diverge ? rev_XY_MAP[i] : i);
-/*      println('parameter '+ (diverge ? rev_XY_MAP[i] : i)  + ' = '+value);*/
+    parameter.value().addValueObserver (function (value) {
+      const idx = (layoutColumns ? REVERSE_LAYOUT_COLUMNS_MAP[i] : i);
 
       if (values[idx] != (value * 16383)) {
         sendMidi(0xB0,AXYZ_CC_MSB[idx],((value * 16383) >> 7) & 0x7F);
@@ -81,7 +79,7 @@ function init() {
   }
 
   for (var i = 0; i < remoteControlsBank.getParameterCount(); i++) {
-    para(i);
+    setupParameter(i);
   }
 
   cursorDevice.isEnabled().markInterested();
@@ -97,12 +95,12 @@ function handleMidi(status, data1, data2) {
     var idx = AXYZ_CC_MSB.indexOf(data1);
     if (idx >= 0) {
       values[idx] = (values[idx] & (0x7F << 0)) | (data2 << 7);
-      remoteControlsBank.getParameter(diverge ? XY_MAP[idx] : idx).set(values[idx], 16384);
+      remoteControlsBank.getParameter(layoutColumns ? LAYOUT_COLUMNS_MAP[idx] : idx).set(values[idx], 16384);
     } else if (highRes) {
       idx = AXYZ_CC_LSB.indexOf(data1);
       if (idx >= 0) {
         values[idx] = (values[idx] & (0x7F << 7)) | (data2 << 0);
-        remoteControlsBank.getParameter(diverge ? XY_MAP[idx] : idx).set(values[idx], 16384);
+        remoteControlsBank.getParameter(layoutColumns ? LAYOUT_COLUMNS_MAP[idx] : idx).set(values[idx], 16384);
       }
     }
   }
@@ -110,7 +108,6 @@ function handleMidi(status, data1, data2) {
 }
 
 function flush() {
-  // transportHandler.updateLEDs ();
 }
 
 function exit() {
