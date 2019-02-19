@@ -13,7 +13,6 @@ if (host.platformIsWindows()) {
   host.addDeviceNameBasedDiscoveryPair(["Lightpad BLOCK"], ["Lightpad BLOCK"]);
 }
 
-var hardware = null;
 var remoteControlsBank = null;
 
 var AXYZ_CC_MSB = [20, 21, 23, 24, 26, 27, 29, 30];

@@ -1,0 +1,6 @@
+/${bitwig.extension.directory}
+/target/
+last-build.bin
+fileHashes.lock
+/.settings/org.eclipse.m2e.core.prefs
+.settings/org.sonarlint.eclipse.core.prefs

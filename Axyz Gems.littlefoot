@@ -21,8 +21,8 @@
         <variable name="orientation" displayName="Orientation" type="option" value="Left Side Button" options="Left Side Button;Top Side Button;Right Side Button;Bottom Side Button;" tooltip="Orientation of device"/>
         <variable name="active" displayName="Active Gems" type="option" value="All Gems" options="All Gems;Only Gem 1;Only Gem 2;Only Gem 3;Only Gem 4;Only Gem 5;Only Gems 2-5" tooltip="Active Gems"/>
         <variable name="primary" displayName="Primary Gem" type="int" min="1" max="5" value="1" displayMode="stepper" tooltip="Gem that will be accessed by the first touch." />
-        <variable name="zscale" displayName="Z Scale" type="float" value="0.65" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z (pressure)" displayMode="bipolar"/>
-        <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.75" min="0.0" max="1.0" tooltip="How much Z (pressure) before scaling kicks in"/>
+        <variable name="zscale" displayName="Z Scale" type="float" value="0.0" min="-1.0" max="1.0" tooltip="Amplify X &amp; Y by Z (pressure)" displayMode="bipolar"/>
+        <variable name="zthreshold" displayName="Z Threshold" type="float" value="0.0" min="0.0" max="1.0" tooltip="How much Z (pressure) before scaling kicks in"/>
         <variable name="highres" displayName="High resolution" type="bool" value="true" tooltip="If this option is turned on the sent values will also be counter parted with the extra LSB CC's, giving them a much higher resolution (0 - 16383 instead of 0 - 127)"/>
         <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on"/>
         <variable name="recorder" displayName="Recorder" type="option" value="None" options="None;4 Beats;8 Beats;" tooltip="Recorder setting"/>
