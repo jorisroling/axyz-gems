@@ -73,7 +73,11 @@ For enjoy the full joy of **Axyz Gems**, including high-resolution, there are de
 
 ### Bitwig
 
-For Bitwig copy the **Bitwig/AxyzGems.control.js** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/AxyzGems.control.js" target="_blank">here</a>) to your **Documents/Bitwig Studio/Controller Scripts** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems (by Joris Röling)**, set the MIDI in and out to **Lightpad** or **Seaboard**) and your good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5.
+There are two 'drivers' for Bitwig, the **AxysGems.control.js** which is a Javascript controller, and a (bit more advanced) Bitwig Extension  called **AxyzGems.bwextension**. The latter is superior, as it allows to match your Axyz Gems setup (in ROLI Dashboard) to be specified. The other assumes the default settings.
+
+To install the Bitwig Extension, copy the file **Bitwig/AxyzGems.bwextesion** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/AxyzGems.bwextension" target="_blank">here</a>) to your **Documents/Bitwig Studio/Extensions** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems Controller (by Joris Röling)**, set the MIDI in and out to **Lightpad** or **Seaboard**) and your good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5.
+
+For Bitwig Controll copy the **Bitwig/AxyzGems.control.js** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/AxyzGems.control.js" target="_blank">here</a>) to your **Documents/Bitwig Studio/Controller Scripts** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems Controller (by Joris Röling)**, set the MIDI in and out to **Lightpad** or **Seaboard**) and your good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5.
 
 As an alternative I have included the **Bitwig/Axyz Gems.flexi** file that can be used as import for the brilliant **Generic Flexi** controller by [Jürgen Moßgraber](http://www.mossgrabers.de/Software/Bitwig/Bitwig.html). Any selected device page parameter will now be controlled by the Gems. Works great with XY device pages for U-He Hive & Zebra2.
 
