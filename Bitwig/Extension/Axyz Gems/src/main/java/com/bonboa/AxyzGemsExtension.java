@@ -46,27 +46,27 @@ public class AxyzGemsExtension extends ControllerExtension
    private Boolean highRes = true;
    private Boolean layoutColumns = false;
    private CursorTrack    cursorTrack;
-   private PinnableCursorDevice cursorDevice; 
+   private PinnableCursorDevice cursorDevice;
    private CursorRemoteControlsPage remoteControlsBank;
-   
+
    private int [] values = {0,0,0,0,0,0,0,0};
-   
+
    @Override
    public void init()
    {
-      final ControllerHost host = getHost();      
+      final ControllerHost host = getHost();
 //      mTransport = host.createTransport();
       host.getMidiInPort(0).setMidiCallback((ShortMidiMessageReceivedCallback)msg -> onMidi(msg));
 //      host.getMidiInPort(0).setSysexCallback((String data) -> onSysex(data));
 
 
-      
+
       Preferences preferences = host.getPreferences();
 
       preferences.getEnumSetting("Enable", "High Resolution", BOOLEAN_OPTIONS, BOOLEAN_OPTIONS[1]).addValueObserver(value -> {
           this.highRes = (value == BOOLEAN_OPTIONS[1]);
       });
-      
+
       preferences.getEnumSetting("Layout", "Button Order", LAYOUT_OPTIONS, LAYOUT_OPTIONS[0]).addValueObserver(value -> {
         this.layoutColumns = (value == LAYOUT_OPTIONS[1]);
       });
@@ -75,14 +75,16 @@ public class AxyzGemsExtension extends ControllerExtension
       this.cursorDevice = this.cursorTrack.createCursorDevice("AXYZ_GEMS_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION);
 
       this.remoteControlsBank = this.cursorDevice.createCursorRemoteControlsPage(8);
+      this.remoteControlsBank.selectedPageIndex().markInterested();
 
       for (int i = 0; i < this.remoteControlsBank.getParameterCount(); i++) {
-    	
+
   	    RemoteControl parameter = this.remoteControlsBank.getParameter(i);
   	    parameter.markInterested();
   	    parameter.setIndication(true);
 
     	final Integer innerI = Integer.valueOf(i);
+  	    parameter.value().markInterested();
   	    parameter.value().addValueObserver ( value -> {
   	      int idx = (layoutColumns ? REVERSE_LAYOUT_COLUMNS_MAP[innerI.intValue()] : innerI.intValue());
 
@@ -93,10 +95,10 @@ public class AxyzGemsExtension extends ControllerExtension
   	    });
       }
 
-      this.cursorDevice.isEnabled().markInterested();
-      this.cursorDevice.isWindowOpen().markInterested();
+//      this.cursorDevice.isEnabled().markInterested();
+//      this.cursorDevice.isWindowOpen().markInterested();
 
-      
+
       host.showPopupNotification("Axyz Gems Initialized");
    }
 
@@ -121,10 +123,10 @@ public class AxyzGemsExtension extends ControllerExtension
        }
        return returnvalue;
    }
-   
-   
+
+
    /** Called when we receive short MIDI message on port 0. */
-   private void onMidi(ShortMidiMessage msg) 
+   private void onMidi(ShortMidiMessage msg)
    {
 	   if (msg.isControlChange()) {
 		    int idx = AxyzGemsExtension.indexOfIntArray(AXYZ_CC_MSB,msg.getData1());
@@ -142,7 +144,7 @@ public class AxyzGemsExtension extends ControllerExtension
    }
 
 //   /** Called when we receive sysex MIDI message on port 0. */
-//   private void onSysex(final String data) 
+//   private void onSysex(final String data)
 //   {
 //      // MMC Transport Controls:
 //      if (data.equals("f07f7f0605f7"))

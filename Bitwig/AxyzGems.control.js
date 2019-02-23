@@ -61,6 +61,7 @@ function init() {
   var cursorDevice = cursorTrack.createCursorDevice("AXYZ_GEMS_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION);
 
   remoteControlsBank = cursorDevice.createCursorRemoteControlsPage(8);
+  remoteControlsBank.selectedPageIndex().markInterested();
 
   function setupParameter(i) {
     const parameter = remoteControlsBank.getParameter(i);
