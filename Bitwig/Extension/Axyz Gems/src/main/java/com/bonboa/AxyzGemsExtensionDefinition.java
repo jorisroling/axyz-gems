@@ -17,7 +17,7 @@ public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
    @Override
    public String getName()
    {
-      return "Axyz Gems2";
+      return "Axyz Gems Extension";
    }
    
    @Override
@@ -29,7 +29,7 @@ public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
    @Override
    public String getVersion()
    {
-      return "1.0";
+      return "1.1";
    }
 
    @Override
@@ -47,7 +47,7 @@ public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
    @Override
    public String getHardwareModel()
    {
-      return "Axyz Gems";
+      return "Axyz Gems Extension";
    }
 
    @Override

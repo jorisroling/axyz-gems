@@ -1,7 +1,7 @@
 loadAPI(7);
 
 host.setShouldFailOnDeprecatedUse(true);
-host.defineController("Bonboa", "Axyz Gems", "0.2", "7f4b4851-911b-4dbf-a6a7-ee7801296c7e", "Joris Röling");
+host.defineController("Bonboa", "Axyz Gems Control", "0.3", "7f4b4851-911b-4dbf-a6a7-ee7801296c7e", "Joris Röling");
 
 host.defineMidiPorts(1, 1);
 
