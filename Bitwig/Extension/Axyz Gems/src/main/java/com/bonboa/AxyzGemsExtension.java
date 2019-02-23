@@ -54,7 +54,7 @@ public class AxyzGemsExtension extends ControllerExtension {
 
 		preferences.getNumberSetting("Channel", "MIDI", 1, 16, 1, "", 1).addValueObserver(value -> {
 			this.channel = (int) ((value * 15) + 1) ;
-			host.showPopupNotification(String.format("Channel %d   %f",this.channel, value));
+			host.showPopupNotification(String.format("Axyz Gems MIDI Channel: %d",this.channel));
 		});
 
 		for (int i=0; i < 8; i++) {
