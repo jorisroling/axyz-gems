@@ -413,7 +413,7 @@ void handleSetup(float x, float y)
             beat = !beat;
             setup = false;
         } else if (py < 8) {
-            clearData();
+            resetToCenter();
             setup = false;
         } else if (py < 12) {
         }
@@ -466,6 +466,14 @@ void handleSetup(float x, float y)
         if (send ==0 || send ==2) sendCC((channel - 1), getYCC(pg), 64);
         if (send ==0 || send ==3) sendCC((channel - 1), getZCC(pg), 64);
     }
+}
+
+void resetToCenter()
+{
+    for (int gem = 1; gem <= maxGems; gem++) {
+        if (isActive(gem)) handleGem(gem-1, 1.0, 1.0, 0.0, 0.0);
+    }
+    clearData();
 }
 
 void clearData()
@@ -523,10 +531,7 @@ void touchEnd(int index, float x, float y, float z, float vz)
             handleSetup(rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.00, 0));
         }
     } else {
-        for (int gem = 1; gem <= maxGems; gem++) {
-            if (isActive(gem)) handleGem(gem-1, 1.0, 1.0, 0.0, 0.0);
-        }
-        clearData();
+        resetToCenter();
     }
 }
 
