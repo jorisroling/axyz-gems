@@ -429,9 +429,9 @@ void handleSetup(float x, float y)
             recordCount = 4;
             setup = false;
         } else if (py < 12) {
-            recorder = 2;
-            recordCount = 8;
-            setup = false;
+//             recorder = 2;
+//             recordCount = 8;
+//             setup = false;
         }
     } else {
         if (py < 6 ) {
@@ -656,29 +656,29 @@ void drawSetup()
     drawDot(c, a, xo + 1, yo + 4);
     drawDot(c, a, xo + 2, yo + 4);
 
-    drawDot(0x00FF00FF, 0x4F, 0, 1);
-    drawDot(0x00FF00FF, 0x7F, 0, 2);
-    drawDot(0x00FF00FF, 0x4F, 0, 3);
+    drawDot(0x00FF7F00, 0x4F, 0, 1);
+    drawDot(0x00FF7F00, 0x7F, 0, 2);
+    drawDot(0x00FF7F00, 0x4F, 0, 3);
 
     drawDot(0x00FFFF00, 0x4F, 0, 5);
     drawDot(0x00FFFF00, 0x7F, 0, 6);
     drawDot(0x00FFFF00, 0x4F, 0, 7);
 
-    drawDot(0x0000FFFF, 0x4F, 0, 9);
-    drawDot(0x0000FFFF, 0x7F, 0, 10);
-    drawDot(0x0000FFFF, 0x4F, 0, 11);
+//     drawDot(0x0000FFFF, 0x4F, 0, 9);
+//     drawDot(0x0000FFFF, 0x7F, 0, 10);
+//     drawDot(0x0000FFFF, 0x4F, 0, 11);
 
-    drawDot(0x00FF0000, 0x4F, 14, 1);
-    drawDot(0x00FF0000, 0x7F, 14, 2);
-    drawDot(0x00FF0000, 0x4F, 14, 3);
+    drawDot(0x000000FF, 0x4F, 14, 1);
+    drawDot(0x000000FF, 0x7F, 14, 2);
+    drawDot(0x000000FF, 0x4F, 14, 3);
 
-    drawDot(0x0000FF00, 0x4F, 14, 5);
-    drawDot(0x0000FF00, 0x7F, 14, 6);
-    drawDot(0x0000FF00, 0x4F, 14, 7);
+    drawDot(0x0000FFFF, 0x4F, 14, 5);
+    drawDot(0x0000FFFF, 0x7F, 14, 6);
+    drawDot(0x0000FFFF, 0x4F, 14, 7);
 
-    drawDot(0x000000FF, 0x4F, 14, 9);
-    drawDot(0x000000FF, 0x7F, 14, 10);
-    drawDot(0x000000FF, 0x4F, 14, 11);
+//     drawDot(0x000000FF, 0x4F, 14, 9);
+//     drawDot(0x000000FF, 0x7F, 14, 10);
+//     drawDot(0x000000FF, 0x4F, 14, 11);
 
     drawPressureMap();
     for (int p = 0; p<5; p++) {
