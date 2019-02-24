@@ -52,13 +52,13 @@ public class AxyzGemsExtension extends ControllerExtension {
 	private int[] values = { 0, 0, 0, 0, 0, 0, 0, 0 };
 
 	private ControllerHost host;
-	
+
 	@Override
 	public void init() {
 		final NoteInput noteInput;
-		
+
 		for (int i=0; i<128;i++) controls[i] = Integer.toString(i);
-				
+
 		this.host = getHost();
 		this.host.getMidiInPort(0).setMidiCallback((ShortMidiMessageReceivedCallback) msg -> onMidi(msg));
 
@@ -72,7 +72,7 @@ public class AxyzGemsExtension extends ControllerExtension {
 		// Set up pitch bend sensitivity to 48 semitones
 		this.sendPitchBendRangeRPN(1, 48);
 
-		                     
+
 		Preferences preferences = host.getPreferences();
 
 		preferences.getEnumSetting("Enable", "High Resolution", BOOLEAN_OPTIONS, BOOLEAN_OPTIONS[1])
@@ -90,15 +90,15 @@ public class AxyzGemsExtension extends ControllerExtension {
 //			this.host.showPopupNotification(String.format("Axyz Gems MIDI Channel: %d",this.channel));
 //		});
 
+		preferences.getEnumSetting("Control Change Channel", "MIDI", channels, "1").addValueObserver( value -> {
+			this.channel = Integer.parseInt(value);
+//			this.host.showPopupNotification(String.format("Axyz Gems MIDI Channel: %d",this.channel));
+		});
+
 		preferences.getEnumSetting("Bend Range", "MIDI", bendRanges, "48").addValueObserver( range -> {
 			int pb = Integer.parseInt(range);
 			noteInput.setUseExpressiveMidi(true, 0, pb);
 			sendPitchBendRangeRPN(1, pb);
-		});
-
-		preferences.getEnumSetting("Control Change Channel", "MIDI", channels, "1").addValueObserver( value -> {
-			this.channel = Integer.parseInt(value);
-//			this.host.showPopupNotification(String.format("Axyz Gems MIDI Channel: %d",this.channel));
 		});
 
 
@@ -148,7 +148,7 @@ public class AxyzGemsExtension extends ControllerExtension {
 			});
 		}
 
-		this.host.showPopupNotification("Axyz Gems Initialized");
+		//this.host.showPopupNotification("Axyz Gems Initialized");
 	}
 
 	private void sendChannelController(int channel, int data1, int data2)
@@ -163,10 +163,10 @@ public class AxyzGemsExtension extends ControllerExtension {
 		this.sendChannelController(channel, 38, 0);
 		this.sendChannelController(channel, 6, range);
 	}
-	
+
 	@Override
 	public void exit() {
-		getHost().showPopupNotification("Axyz Gems Exited");
+		//getHost().showPopupNotification("Axyz Gems Exited");
 	}
 
 	@Override

@@ -9,7 +9,7 @@ import com.bitwig.extension.controller.api.ControllerHost;
 public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
 {
    private static final UUID DRIVER_ID = UUID.fromString("f83d80c8-8310-47d7-aac7-8c6e73a64432");
-   
+
    public AxyzGemsExtensionDefinition()
    {
    }
@@ -19,7 +19,7 @@ public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
    {
       return "Axyz Gems Extension";
    }
-   
+
    @Override
    public String getAuthor()
    {
@@ -29,7 +29,7 @@ public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
    @Override
    public String getVersion()
    {
-      return "1.20";
+      return "1.21";
    }
 
    @Override
@@ -37,13 +37,13 @@ public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
    {
       return DRIVER_ID;
    }
-   
+
    @Override
    public String getHardwareVendor()
    {
       return "Bonboa";
    }
-   
+
    @Override
    public String getHardwareModel()
    {
