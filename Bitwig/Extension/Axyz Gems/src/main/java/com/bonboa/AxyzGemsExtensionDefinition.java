@@ -29,7 +29,7 @@ public class AxyzGemsExtensionDefinition extends ControllerExtensionDefinition
    @Override
    public String getVersion()
    {
-      return "1.1";
+      return "1.20";
    }
 
    @Override
