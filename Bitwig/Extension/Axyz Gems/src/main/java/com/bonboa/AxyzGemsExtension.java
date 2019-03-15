@@ -43,7 +43,7 @@ public class AxyzGemsExtension extends ControllerExtension {
 	private static final int[] AXYZ_CC_LSB = { 20 + 32, 21 + 32, 23 + 32, 24 + 32, 26 + 32, 27 + 32, 29 + 32, 30 + 32 };
 
 	private Boolean highRes = true;
-	private Boolean layoutColumns = false;
+	private Boolean layoutColumns = true;
 	private CursorTrack cursorTrack;
 	private PinnableCursorDevice cursorDevice;
 	private CursorRemoteControlsPage remoteControlsBank;
@@ -80,7 +80,7 @@ public class AxyzGemsExtension extends ControllerExtension {
 					this.highRes = (value == BOOLEAN_OPTIONS[1]);
 				});
 
-		preferences.getEnumSetting("Layout", "Button Order", LAYOUT_OPTIONS, LAYOUT_OPTIONS[0])
+		preferences.getEnumSetting("Layout", "Button Order", LAYOUT_OPTIONS, LAYOUT_OPTIONS[1])
 				.addValueObserver(value -> {
 					this.layoutColumns = (value == LAYOUT_OPTIONS[1]);
 				});
