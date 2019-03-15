@@ -421,6 +421,8 @@ void handleSetup(float x, float y)
             resetToCenter();
             setup = false;
         } else if (py < 12) {
+            multitouch = !multitouch;
+            setup = false;
         }
     } else if (px == 14) {
         if (py < 4) {
@@ -678,9 +680,9 @@ void drawSetup()
     drawDot(0x00FFFF00, 0x7F, 0, 6);
     drawDot(0x00FFFF00, 0x4F, 0, 7);
 
-//     drawDot(0x0000FFFF, 0x4F, 0, 9);
-//     drawDot(0x0000FFFF, 0x7F, 0, 10);
-//     drawDot(0x0000FFFF, 0x4F, 0, 11);
+    drawDot(0x0000FFFF, 0x4F, 0, 9);
+    drawDot(0x0000FFFF, 0x7F, 0, 10);
+    drawDot(0x0000FFFF, 0x4F, 0, 11);
 
     drawDot(0x000000FF, 0x4F, 14, 1);
     drawDot(0x000000FF, 0x7F, 14, 2);
