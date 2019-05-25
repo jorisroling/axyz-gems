@@ -1,7 +1,7 @@
 loadAPI(7);
 
 host.setShouldFailOnDeprecatedUse(true);
-host.defineController("Bonboa", "Axyz Gems Control", "1.22", "7f4b4851-911b-4dbf-a6a7-ee7801296c7e", "Joris Röling");
+host.defineController("Bonboa", "Axyz Gems Control", "1.21", "7f4b4851-911b-4dbf-a6a7-ee7801296c7e", "Joris Röling");
 
 host.defineMidiPorts(1, 1);
 
@@ -69,8 +69,10 @@ function init() {
 		// 	preferences.getEnumSetting((i % 2) == 0 ? "Previous" : "Next", "Device Preset", controls, ''+(32+i)).addValueObserver( function(value) {
 		// 		var control = parseInt(value);
 		// 		if (control == 32) {
+          // println("Previous Preset");
 		// 			cursorDevice.switchToPreviousPreset();
 		// 		} else if (control == 32 + 1) {
+          // println("Next Preset");
 		// 			cursorDevice.switchToNextPreset();
 		// 		}
 		// 	});
