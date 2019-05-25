@@ -52,7 +52,7 @@ The **Orientation** give the (generally missing) option to have your ROLI Lightp
 
 The **Active Gems**  determine which gems are accesible. So 'All gems' will work with the full 5 gems, and 'Only Gem 3' will work only with Gem 3. The last option 'Only Gems 2-5' is handy if you want only the last 4 gems to access 4 XY pads in your software.
 
-The **Primary Gem** determines which gem is selected by the first touch (finger), the next gem is accessible by the second touch, etc.
+The **Primary Gem** determines which gem is selected by the first touch (finger), the next gem is accessible by the second touch, etc. This can be changed mid-flight by hitting the dot in it's respective corners.
 
 If the option **Z Scale** allows pressure to influence (amplify) the actual position of the gem. The **Z Threshold** determines to amount of pressure needed before the scaling kicks in.
 
