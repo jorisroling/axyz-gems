@@ -105,12 +105,6 @@ public class AxyzGemsExtension extends ControllerExtension {
 
 		for (int i=0; i < 8; i++) {
 			final Integer innerI = Integer.valueOf(i);
-//			preferences.getNumberSetting(String.format("%s axis Control Change",(i % 2) == 0 ? "X" : "Y"), String.format("Axyz Gem %d",(((int)(i/2)) % 4)+1), 0, 127, 1, "", AXYZ_CC_MSB[i]).addValueObserver(value -> {
-//				value = value * 128;
-//				this.host.showPopupNotification(String.format("Axyz Gems %d %s axis Control Change: %d",((((int)(innerI.intValue()/2)) % 4)+1),(innerI.intValue() % 2) == 0 ? "X" : "Y",(int)value));
-//				AXYZ_CC_MSB[innerI.intValue()] = (int) value;
-//				AXYZ_CC_LSB[innerI.intValue()] = ((int) value) < 32 ? (((int) value) + 32) : 0xFF;
-//			});
 			preferences.getEnumSetting(String.format("%s axis Control Change",(i % 2) == 0 ? "X" : "Y"), String.format("Axyz Gem %d",(((int)(i/2)) % 4)+1), controls, Integer.toString(AXYZ_CC_MSB[i])).addValueObserver( value -> {
 				int control = Integer.parseInt(value);
 //				this.host.showPopupNotification(String.format("Axyz Gems %d %s axis Control Change: %d",((((int)(innerI.intValue()/2)) % 4)+1),(innerI.intValue() % 2) == 0 ? "X" : "Y",control));
@@ -119,9 +113,21 @@ public class AxyzGemsExtension extends ControllerExtension {
 			});
 
 		}
+
 		this.cursorTrack = host.createCursorTrack("AXYZ_GEMS_CURSOR_TRACK", "Cursor Track", 0, 0, true);
 		this.cursorDevice = this.cursorTrack.createCursorDevice("AXYZ_GEMS_CURSOR_DEVICE", "Cursor Device", 0,
 				CursorDeviceFollowMode.FOLLOW_SELECTION);
+
+		// for (int i=0; i< 2; i++) {
+		// 	preferences.getEnumSetting((i % 2) == 0 ? "Previous" : "Next", "Device Preset", controls, Integer.toString(32+i)).addValueObserver( value -> {
+		// 		int control = Integer.parseInt(value);
+		// 		if (control == 32) {
+		// 			// cursorDevice.switchToPreviousPreset();
+		// 		} else if (control == 32 + 1) {
+		// 			// cursorDevice.switchToNextPreset();
+		// 		}
+		// 	});
+		// }
 
 		this.remoteControlsBank = this.cursorDevice.createCursorRemoteControlsPage(8);
 		this.remoteControlsBank.selectedPageIndex().markInterested();

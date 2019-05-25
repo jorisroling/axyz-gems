@@ -42,7 +42,8 @@ var layoutColumns = true;
 var translateWithMap = true;
 
 function init() {
-
+  var controls=[];
+  for (var c=0;c<128;c++) controls.push(i+'')
   var preferences = host.getPreferences ();
 
   preferences.getEnumSetting ("Enable", "High Resolution", BOOLEAN_OPTIONS, BOOLEAN_OPTIONS[1]).addValueObserver (function (value) {
@@ -59,9 +60,23 @@ function init() {
   var cursorTrack = host.createCursorTrack("AXYZ_GEMS_CURSOR_TRACK", "Cursor Track", 0, 0, true);
 
   var cursorDevice = cursorTrack.createCursorDevice("AXYZ_GEMS_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION);
+  // var primaryDevice = cursorTrack.getPrimaryDevice();
 
   remoteControlsBank = cursorDevice.createCursorRemoteControlsPage(8);
   remoteControlsBank.selectedPageIndex().markInterested();
+
+		for (var i=0; i< 2; i++) {
+			preferences.getEnumSetting((i % 2) == 0 ? "Previous" : "Next", "Device Preset", controls, ''+(32+i)).addValueObserver( function(value) {
+				var control = parseInt(value);
+				if (control == 32) {
+          println("Previous Preset");
+//					primaryDevice.switchToPreviousPreset();
+				} else if (control == 32 + 1) {
+          println("Next Preset");
+//					primaryDevice.switchToNextPreset();
+				}
+			});
+		}
 
   function setupParameter(i) {
     const parameter = remoteControlsBank.getParameter(i);
