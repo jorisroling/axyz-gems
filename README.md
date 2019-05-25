@@ -48,7 +48,7 @@ Pressing the **SideButton** a bit longer will open the **Setup Page** from which
 
 ## Parameters
 
-The **Orientation** give the (generally missing) option to have your ROLI Lightpad Block oriented in any way. This is especially handy if you combine the Lightpad Block with the Seaboard Block, and want to have it connected Seaboard Block left and Lightpad Block right. Without this option the **Side Button** would be obstructed.
+<!-- The **Orientation** give the (generally missing) option to have your ROLI Lightpad Block oriented in any way. This is especially handy if you combine the Lightpad Block with the Seaboard Block, and want to have it connected Seaboard Block left and Lightpad Block right. Without this option the **Side Button** would be obstructed. -->
 
 The **Active Gems**  determine which gems are accesible. So 'All gems' will work with the full 5 gems, and 'Only Gem 3' will work only with Gem 3. The last option 'Only Gems 2-5' is handy if you want only the last 4 gems to access 4 XY pads in your software.
 
