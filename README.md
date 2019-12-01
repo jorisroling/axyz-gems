@@ -1,4 +1,4 @@
-# Axyz Gems v1.24
+# Axyz Gems v1.25
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
