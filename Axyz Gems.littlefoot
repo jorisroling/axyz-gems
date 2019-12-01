@@ -781,8 +781,9 @@ void drawGems()
         int y = getHeapByte( heapOffset(0, p, 1, 0) );
         int z = getHeapByte( heapOffset(0, p, 2, 0) );
 
-        if (x > 127) continue;
-        if (y > 127) continue;
+        if (x > 127 && y > 127) continue;
+        if (x > 127) x = 63;
+        if (y > 127) y = 63;
         if (z > 127) z = 0;
 
         float xf = map(float(x), 0.0, 127.0, 0.07, 1.93);
@@ -807,8 +808,9 @@ void drawGems()
         int x = getHeapByte( heapOffset(0, p, 0, 0) );
         int y = getHeapByte( heapOffset(0, p, 1, 0) );
 
-        if (x > 127) continue;
-        if (y > 127) continue;
+        if (x > 127 && y > 127) continue;
+        if (x > 127) x = 63;
+        if (y > 127) y = 63;
 
         float xf = map(float(x), 0.0, 127.0, 0.0, 14.0);
         float yf = map(float(y), 0.0, 127.0, 14.0, 0.0);
