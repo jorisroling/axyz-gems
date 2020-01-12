@@ -1,19 +1,20 @@
-# Axyz Gems v1.25
+# Axyz Gems v1.26
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
-[Introduction](#introduction)
-[Control Changes](#control-changes)
-[Operation](#operation)
-[Parameters](#parameters)
-[Installation](#installation)
-[Heads up!](#heads-up)
-[Integration](#integration)
-[Bitwig](#bitwig)
-[Bitwig Extension](#bitwig-extension)
-[Bitwig Control](#bitwig-control)
-[Generic Flexi](#generic-flexi)
-[Ableton](#ableton)
+[Introduction](#introduction)  
+[Control Changes](#control-changes)  
+[Operation](#operation)  
+[Setup](#setup)  
+[Parameters](#parameters)  
+[Installation](#installation)  
+[Heads up!](#heads-up)  
+[Integration](#integration)  
+[Bitwig](#bitwig)  
+[Bitwig Extension](#bitwig-extension)  
+[Bitwig Control](#bitwig-control)  
+[Generic Flexi](#generic-flexi)  
+[Ableton](#ableton)  
 
 ## Introduction
 
@@ -44,7 +45,27 @@ Use one to five fingers at once to place & move the gems on the pad. The first t
 
 Pressing the **Side Button** shortly will advance (and possibly wrap around) the **Primary Gem**, shown by the **Indicator** (see table above).
 
+
+## Setup
+
 Pressing the **SideButton** a bit longer will open the **Setup Page** from which you can easily map your DAW's controls. Here selecting a dimension (X, Y or Z) and tapping one of the gems will only send out the corresponding the MIDI CC's (which prevents confusing the receiver). Press the **Side Button** again to leave this page, and return to normal operation.
+
+### Side toggles
+
+The small side buttons will give access to some toggle states, pressing them will toggle and exit the **Setup Page**.
+
+#### Left toggles
+
+1. orange: Beat toggle
+2. yellow: Reset Gems (center)
+3. cyan: Multitouch toggle
+
+
+#### Right toggles
+
+1. blue: Record Off
+2. green: Record On (4)
+
 
 ## Parameters
 

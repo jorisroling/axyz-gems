@@ -1,5 +1,5 @@
 /*
-<metadata description="v1.25 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.25 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
+<metadata description="v1.26 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.26 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
           target="Lightpad"
           tags="MIDI;Controller;">
 
@@ -417,24 +417,24 @@ void handleSetup(float x, float y)
     int pg = -1;
 
     if (px == 0) {
-        if (py < 4) {
+        if (py < 4) {                        // Beat toggle
             beat = !beat;
             setup = false;
-        } else if (py < 8) {
+        } else if (py < 8) {                 // Reset Gems (center)
             resetToCenter();
             setup = false;
-        } else if (py < 12) {
+        } else if (py < 12) {                // Multitouch toggle
             multitouch = !multitouch;
             setup = false;
         }
     } else if (px == 14) {
-        if (py < 4) {
+        if (py < 4) {                        // Record Off
             recorder = 0;
             recordCount = 0;
             sampleIndex = 0;
             playing = false;
             setup = false;
-        } else if (py < 8) {
+        } else if (py < 8) {                // Record On (4)
             recorder = 1;
             recordCount = 4;
             setup = false;
@@ -717,9 +717,9 @@ void drawSetup()
     drawDot(0x000000FF, 0x7F, 14, 2);
     drawDot(0x000000FF, 0x4F, 14, 3);
 
-    drawDot(0x0000FFFF, 0x4F, 14, 5);
-    drawDot(0x0000FFFF, 0x7F, 14, 6);
-    drawDot(0x0000FFFF, 0x4F, 14, 7);
+    drawDot(0x0000FF00, 0x4F, 14, 5);
+    drawDot(0x0000FF00, 0x7F, 14, 6);
+    drawDot(0x0000FF00, 0x4F, 14, 7);
 
 //     drawDot(0x000000FF, 0x4F, 14, 9);
 //     drawDot(0x000000FF, 0x7F, 14, 10);
