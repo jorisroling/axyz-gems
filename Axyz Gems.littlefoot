@@ -509,13 +509,13 @@ void handleTouch(int index, float x,  float y, float z, float vz, bool start)
         }
     } else if (index == 1 && x < 0.079 && y > 1.923) {
         if (start && repaintCounter > (performStamp + 7)) {
-            primary = primary == 3 ? 0 : 3;
+            primary = primary == 4 ? 0 : 4;
             ensurePrimariIsActive();
             performStamp = repaintCounter;
         }
     } else if (index == 1 && x > 1.923 && y < 0.079) {
         if (start && repaintCounter > (performStamp + 7)) {
-            primary = primary == 4 ? 0 : 4;
+            primary = primary == 3 ? 0 : 3;
             ensurePrimariIsActive();
             performStamp = repaintCounter;
         }
@@ -750,9 +750,9 @@ void drawGems()
 {
     if (primary == 2) {
         drawDot(getColour(primary-1), 0x4F, 0, 0);
-    } else if (primary == 3) {
-        drawDot(getColour(primary-1), 0x4F, 0, 14);
     } else if (primary == 4) {
+        drawDot(getColour(primary-1), 0x4F, 0, 14);
+    } else if (primary == 3) {
         drawDot(getColour(primary-1), 0x4F, 14, 0);
     } else if (primary == 5) {
         drawDot(getColour(primary-1), 0x4F, 14, 14);
