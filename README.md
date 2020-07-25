@@ -1,4 +1,4 @@
-# Axyz Gems v1.26
+# Axyz Gems v1.27
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
@@ -31,13 +31,13 @@ To see the gems operate bi-directional, make sure the mapped control values are 
 
 The arrangement of gems is as follows:
 
-| Gem  | Colour | Indicator | CC X | CC Y | CC Z |
-|:----:|:------:|:---------:|:----:|:----:| :---:|
-|   1  | orange |    none   |   2  |  11  |  14  |
-|   2  |  red   |     NE    |  20  |  21  |  22  |
-|   3  |  green |     SE    |  23  |  24  |  25  |
-|   4  |  blue  |     NW    |  26  |  27  |  28  |
-|   5  |  pink  |     SW    |  29  |  30  |  31  |
+| Gem  | Colour |   Indicator  | CC X | CC Y | CC Z |
+|:----:|:------:|:------------:|:----:|:----:| :---:|
+|   1  | orange |      none    |   2  |  11  |  14  |
+|   2  |  red   |    Top Left  |  20  |  21  |  22  |
+|   3  |  green |    Top Right |  23  |  24  |  25  |
+|   4  |  blue  | Bottom Left  |  26  |  27  |  28  |
+|   5  |  pink  | Bottom Right |  29  |  30  |  31  |
 
 ## Operation
 
