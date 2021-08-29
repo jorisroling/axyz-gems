@@ -1,5 +1,5 @@
 /*
-<metadata description="v1.27 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.27 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
+<metadata description="v1.28 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.28 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
           target="Lightpad"
           tags="MIDI;Controller;">
 
@@ -904,7 +904,7 @@ void handleMIDI(int byte0, int byte1, int byte2)
                         yy = getHeapByte(ofstA);
                         x = map(float(xx), 0.0, 127.0, 0.0, 2.0);
                         y = map(float(yy), 0.0, 127.0, 2.0, 0.0);
-                        if (clearOnCenter && (xx == 63 || xx == 0xFF) && (yy == 63 || yy == 0xFF)) {
+                        if (clearOnCenter && (xx == 63 || xx == 64 || xx == 0xFF) && (yy == 63 || yy == 64 || yy == 0xFF)) {
                             setHeapByte(ofstA, 0xFF);
                             value=0xFF;
                         }
@@ -915,7 +915,7 @@ void handleMIDI(int byte0, int byte1, int byte2)
                         yy = value;
                         x = map(float(xx), 0.0, 127.0, 0.0, 2.0);
                         y = map(float(yy), 0.0, 127.0, 2.0, 0.0);
-                        if (clearOnCenter && (xx == 63 || xx == 0xFF) && (yy == 63 || yy == 0xFF)) {
+                        if (clearOnCenter && (xx == 63 || xx == 64 || xx == 0xFF) && (yy == 63 || yy == 64 || yy == 0xFF)) {
                             setHeapByte(ofstA, 0xFF);
                             value=0xFF;
                         }
