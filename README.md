@@ -26,7 +26,7 @@ To see the gems operate bi-directional, make sure the mapped control values are 
 
 ## Installation
 
-<img src="./Documentation/images/roli-dashboard-edit-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" /> <img src="./Documentation/images/roli-dashboard-apps-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" /> 
+<img src="./Documentation/images/roli-dashboard-apps-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" /> <img src="./Documentation/images/roli-dashboard-edit-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" />
 
 To install this script save (only) the **Axyz Gems.littlefoot** script (<a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Axyz%20Gems.littlefoot" target="_blank">here</a>)  in the default **ROLI Blocks Littlefoot** location of your platform (On MacOS this is **~/Documents/ROLI/LittleFoot**). Now whenever you start the **ROLI Dashboard**, you will see the **Axyz Gems** app next to the default apps. Select it, and start tweaking... Enjoy! 😊
 
