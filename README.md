@@ -2,19 +2,19 @@
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
-[Introduction](#introduction)
-[Control Changes](#control-changes)
-[Operation](#operation)
-[Setup](#setup)
-[Parameters](#parameters)
-[Installation](#installation)
-[Heads up!](#heads-up)
-[Integration](#integration)
-[Bitwig](#bitwig)
-[Bitwig Extension](#bitwig-extension)
-[Bitwig Control](#bitwig-control)
-[Generic Flexi](#generic-flexi)
-[Ableton](#ableton)
+[Introduction](#introduction)  
+[Control Changes](#control-changes)  
+[Operation](#operation)  
+[Setup](#setup)  
+[Parameters](#parameters)  
+[Installation](#installation)  
+[Heads up!](#heads-up)  
+[Integration](#integration)  
+[Bitwig](#bitwig)  
+[Bitwig Extension](#bitwig-extension)  
+[Bitwig Control](#bitwig-control)  
+[Generic Flexi](#generic-flexi)  
+[Ableton](#ableton)  
 
 ## Introduction
 
