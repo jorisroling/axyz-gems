@@ -1,4 +1,4 @@
-# Axyz Gems v1.28
+# Axyz Gems v1.29
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
@@ -11,7 +11,6 @@
 [Heads up!](#heads-up)  
 [Integration](#integration)  
 [Bitwig](#bitwig)  
-[Bitwig Extension](#bitwig-extension)  
 [Bitwig Control](#bitwig-control)  
 [Generic Flexi](#generic-flexi)  
 [Ableton](#ableton)  
@@ -100,19 +99,21 @@ For enjoy the full joy of **Axyz Gems**, including high-resolution, there are de
 
 ### Bitwig
 
-There are two 'drivers' for Bitwig, the **AxysGems.control.js** which is a Javascript controller, and a (bit more advanced) Bitwig Extension  called **AxyzGems.bwextension**. The latter is superior, as it allows to match your Axyz Gems setup (in ROLI Dashboard) to be specified. The other assumes the default settings.
+Here is the 'driver' for Bitwig, the **AxysGems.control.js** which is a Javascript controller.
 
 ---
+<!--
+There are two 'drivers' for Bitwig, the **AxysGems.control.js** which is a Javascript controller, and a (bit more advanced) Bitwig Extension  called **AxyzGems.bwextension**. The latter is superior, as it allows to match your Axyz Gems setup (in ROLI Dashboard) to be specified. The other assumes the default settings.
 
 #### Bitwig Extension
 
 <img src="./Documentation/images/bitwig_axyz_gems_extension_ui.png" alt="Bitwig Axyz Gems Extension UI" align="right" width="250"/>To install the Bitwig Extension, copy the file **Bitwig/AxyzGems.bwextension** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/AxyzGems.bwextension" target="_blank">here</a>) to your **Documents/Bitwig Studio/Extensions** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems Controller (by Joris Röling)**, set the MIDI in and out to **Lightpad** or **Seaboard**) and your good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5.
 
 ---
-
+-->
 #### Bitwig Control
 
-<img src="./Documentation/images/bitwig_axyz_gems_control_ui.png" alt="Bitwig Axyz Gems Control UI" align="right" width="250" />For Bitwig Controll copy the **Bitwig/AxyzGems.control.js** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/AxyzGems.control.js" target="_blank">here</a>) to your **Documents/Bitwig Studio/Controller Scripts** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems Controller (by Joris Röling)**, set the MIDI in and out to **Lightpad** or **Seaboard**) and your good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5.
+<img src="./Documentation/images/bitwig_axyz_gems_control_ui.png" alt="Bitwig Axyz Gems Control UI" align="right" width="250" />For Bitwig Controll copy the **Bitwig/AxyzGems.control.js** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/AxyzGems.control.js" target="_blank">here</a>) to your **Documents/Bitwig Studio/Controller Scripts** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems Controller (by Joris Röling)**, set the MIDI in and out to **Lightpad BLOCK** or **Lightpad Block (Bluetooth)**) and your good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5. The control will be hi-res, AKA 14-bit.
 
 ---
 
@@ -124,5 +125,5 @@ There are two 'drivers' for Bitwig, the **AxysGems.control.js** which is a Javas
 
 ### Ableton
 
-<img src="./Documentation/images/ableton_axyz_gems_ui.png" alt="Ableton Axyz Gems UI" align="right" width="250" />For Ableton copy the entire **Ableton/Axyz_Gems** folder to your **MIDI Remote Scripts** folder. Start Ableton, go to **Preferences** -> **Link MIDI**, select **Axyz Gems** in an empty **Control Surface** slot, select **Lightpad** or **Seaboard** in **Input** and **Output** and your good to go. The 8 macro knobs of a selected grouped device will be mapped to Gems 2 - 5.
+<img src="./Documentation/images/ableton_axyz_gems_ui.png" alt="Ableton Axyz Gems UI" align="right" width="250" />For Ableton copy the entire **Ableton/Axyz_Gems** folder to your **MIDI Remote Scripts** folder (on Mac this will be **~/Music/Ableton/User Library/Remote Scripts**). Start Ableton, go to **Preferences** -> **Link MIDI**, select **Axyz Gems** in an empty **Control Surface** slot, select **Lightpad BLOCK** or **Lightpad Block (Bluetooth)** in **Input** and **Output** and your good to go. The 8 macro knobs of a selected grouped device will be mapped to Gems 2 - 5. (Sadly this will be low-res, AKA 7-bit, only)
 <div style="clear:both"></div>

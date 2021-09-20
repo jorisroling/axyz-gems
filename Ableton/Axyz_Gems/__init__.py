@@ -13,8 +13,8 @@ def create_instance(c_instance):
 from _Framework.Capabilities import *
 
 def get_capabilities():
-    return {CONTROLLER_ID_KEY: controller_id(vendor_id=5015, product_ids=[
-                         188], model_name='Axyz Gems'),
+    return {CONTROLLER_ID_KEY: controller_id(vendor_id=95015, product_ids=[
+                         9188], model_name='Axyz Gems'),
        PORTS_KEY: [
                  inport(props=[NOTES_CC, SCRIPT]),
                  outport(props=[NOTES_CC, SCRIPT])]}

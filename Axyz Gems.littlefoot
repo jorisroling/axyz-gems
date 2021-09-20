@@ -1,5 +1,5 @@
 /*
-<metadata description="v1.28 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.28 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
+<metadata description="v1.29 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.29 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
           target="Lightpad"
           tags="MIDI;Controller;">
 
@@ -571,7 +571,7 @@ void touchEnd(int index, float x, float y, float z, float vz)
             handleSetup(rotateX(x, y, 0.0, 2.0, 0), rotateY(x, y, 0.0, 2.00, 0));
         }
     } else {
-        if (((multitouch && (index < 1 || index > 5)) || (!multitouch && index>2))) resetToCenter();
+        if (((multitouch && (index < 1 || index > (active == 6 ? 4 : 5) )) || (!multitouch && index>2))) resetToCenter();
     }
 }
 

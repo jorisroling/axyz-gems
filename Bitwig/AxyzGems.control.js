@@ -1,16 +1,16 @@
 loadAPI(7);
 
 host.setShouldFailOnDeprecatedUse(true);
-host.defineController("Bonboa", "Axyz Gems Control", "1.21", "7f4b4851-911b-4dbf-a6a7-ee7801296c7e", "Joris Röling");
+host.defineController("Bonboa", "Axyz Gems Control", "1.29", "7f4b4851-911b-4dbf-a6a7-ee7801296c7e", "Joris Röling");
 
 host.defineMidiPorts(1, 1);
 
 if (host.platformIsWindows()) {
-  host.addDeviceNameBasedDiscoveryPair(["Lightpad BLOCK"], ["Lightpad BLOCK"]);
+  host.addDeviceNameBasedDiscoveryPair(["Lightpad BLOCK "], ["Lightpad BLOCK "]);
 } else if (host.platformIsMac()) {
-  host.addDeviceNameBasedDiscoveryPair(["Lightpad BLOCK"], ["Lightpad BLOCK"]);
+  host.addDeviceNameBasedDiscoveryPair(["Lightpad BLOCK "], ["Lightpad BLOCK "]);
 } else if (host.platformIsLinux()) {
-  host.addDeviceNameBasedDiscoveryPair(["Lightpad BLOCK"], ["Lightpad BLOCK"]);
+  host.addDeviceNameBasedDiscoveryPair(["Lightpad BLOCK "], ["Lightpad BLOCK "]);
 }
 
 var remoteControlsBank = null;
@@ -49,7 +49,7 @@ function init() {
   preferences.getEnumSetting ("Enable", "High Resolution", BOOLEAN_OPTIONS, BOOLEAN_OPTIONS[1]).addValueObserver (function (value) {
     highRes = value == BOOLEAN_OPTIONS[1];
   });
-  preferences.getEnumSetting ("Layout", "Button Order", LAYOUT_OPTIONS, LAYOUT_OPTIONS[0]).addValueObserver (function (value) {
+  preferences.getEnumSetting ("Layout", "Button Order", LAYOUT_OPTIONS, LAYOUT_OPTIONS[1]).addValueObserver (function (value) {
     layoutColumns = (value == LAYOUT_OPTIONS[1]);
   });
 
@@ -60,23 +60,9 @@ function init() {
   var cursorTrack = host.createCursorTrack("AXYZ_GEMS_CURSOR_TRACK", "Cursor Track", 0, 0, true);
 
   var cursorDevice = cursorTrack.createCursorDevice("AXYZ_GEMS_CURSOR_DEVICE", "Cursor Device", 0, CursorDeviceFollowMode.FOLLOW_SELECTION);
-  // var primaryDevice = cursorTrack.getPrimaryDevice();
 
   remoteControlsBank = cursorDevice.createCursorRemoteControlsPage(8);
   remoteControlsBank.selectedPageIndex().markInterested();
-
-		// for (var i=0; i< 2; i++) {
-		// 	preferences.getEnumSetting((i % 2) == 0 ? "Previous" : "Next", "Device Preset", controls, ''+(32+i)).addValueObserver( function(value) {
-		// 		var control = parseInt(value);
-		// 		if (control == 32) {
-          // println("Previous Preset");
-		// 			cursorDevice.switchToPreviousPreset();
-		// 		} else if (control == 32 + 1) {
-          // println("Next Preset");
-		// 			cursorDevice.switchToNextPreset();
-		// 		}
-		// 	});
-		// }
 
   function setupParameter(i) {
     const parameter = remoteControlsBank.getParameter(i);
