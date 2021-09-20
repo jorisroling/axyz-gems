@@ -1,14 +1,14 @@
-# Axyz Gems v1.29
+# Axyz Gems v1.30
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 ##### Table of Contents
 [Introduction](#introduction)  
+[Installation](#installation)  
+[Heads up!](#heads-up)  
 [Control Changes](#control-changes)  
 [Operation](#operation)  
 [Setup](#setup)  
 [Parameters](#parameters)  
-[Installation](#installation)  
-[Heads up!](#heads-up)  
 [Integration](#integration)  
 [Bitwig](#bitwig)  
 <!--[Bitwig Extension](#bitwig-extension)  -->
@@ -26,6 +26,18 @@ I created this script because I really enjoy the plugins by U-he (Hive & Zebra2 
 
 To see the gems operate bi-directional, make sure the mapped control values are send back to the device. In case of Ableton Live, ensure the **Remote** option is selected with your **Output: Lightpad Block** MIDI setup. If you like to see the gems pulsing on the beat, make sure **Sync** is selected as-well.
 
+
+## Installation
+
+<img src="./Documentation/images/roli-dashboard-edit-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" /> <img src="./Documentation/images/roli-dashboard-apps-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" /> 
+
+To install this script save (only) the **Axyz Gems.littlefoot** script (<a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Axyz%20Gems.littlefoot" target="_blank">here</a>)  in the default **ROLI Blocks Littlefoot** location of your platform (On MacOS this is **~/Documents/ROLI/LittleFoot**). Now whenever you start the **ROLI Dashboard**, you will see the **Axyz Gems** app next to the default apps. Select it, and start tweaking... Enjoy! 😊
+
+<div style="clear:both"></div>
+
+### Heads up!
+
+It has come to my attention that some users download the **Axyz Gems.littlefoot** by right clicking the file (above) and selecting _download_ as an option. Saving that way will in fact dowload the container HTML file, and so it is impossible for **ROLI Dashboard** to upload the script to the **Lightpad BLOCK**. You will typicly be warned by an alert saying something like "Line 7, Column1: Found "<" when expecting a global variable or function". Please use the instructions above, or if you prefer, download the full release including these instructions by clicking [here](https://github.com/jorisroling/axyz-gems/releases/latest) and then click **Source code(zip)**.
 
 ## Control Changes
 
@@ -85,18 +97,6 @@ The **MIDI Channel** determines the MIDI channel used for sending the CC's.
 The **Recorder** offers a *Per Beat* option, which will hold and playback all the values per beat. (This option might expand in the future)
 A large beat counter will show up, and advance. For this option to work, a MIDI clock signal should be sent to the **Lightpad Block**, as it needs to know the beat.
 
-
-## Installation
-
-<img src="./Documentation/images/roli-dashboard-edit-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" /> <img src="./Documentation/images/roli-dashboard-apps-axyz-gems.png" alt="Roli Dashboard Apps Axyz Gems" align="center" width="400" /> 
-
-To install this script save (only) the **Axyz Gems.littlefoot** script (<a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Axyz%20Gems.littlefoot" target="_blank">here</a>)  in the default **ROLI Blocks Littlefoot** location of your platform (On MacOS this is **~/Documents/ROLI/LittleFoot**). Now whenever you start the **ROLI Dashboard**, you will see the **Axyz Gems** app next to the default apps. Select it, and start tweaking... Enjoy! 😊
-
-<div style="clear:both"></div>
-
-### Heads up!
-
-It has come to my attention that some users download the **Axyz Gems.littlefoot** by right clicking the file (above) and selecting _download_ as an option. Saving that way will in fact dowload the container HTML file, and so it is impossible for **ROLI Dashboard** to upload the script to the **Lightpad BLOCK**. You will typicly be warned by an alert saying something like "Line 7, Column1: Found "<" when expecting a global variable or function". Please use the instructions above, or if you prefer, download the full release including these instructions by clicking [here](https://github.com/jorisroling/axyz-gems/releases/latest) and then click **Source code(zip)**.
 
 ## Integration
 
