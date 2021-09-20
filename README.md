@@ -11,10 +11,7 @@
 [Parameters](#parameters)  
 [Integration](#integration)  
 [Bitwig](#bitwig)  
-<!--[Bitwig Extension](#bitwig-extension)  -->
-<!--[Bitwig Control](#bitwig-control)  -->
-<!--[Generic Flexi](#generic-flexi)  -->
-[Ableton](#ableton)  
+<!--[Bitwig Extension](#bitwig-extension)  --><!--[Bitwig Control](#bitwig-control)  --><!--[Generic Flexi](#generic-flexi)  -->[Ableton](#ableton)  
 
 ## Introduction
 
