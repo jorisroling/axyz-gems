@@ -1,4 +1,4 @@
-# Axyz Gems v1.30
+# Axyz Gems v1.31
 **ROLI Lightpad Block** code for running as a high-res multi XY surface.
 
 <img src="./Documentation/images/axyz_gems.gif" alt="Axyz Gems in Action" align="center" width="320" />
