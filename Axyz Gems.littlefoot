@@ -1,5 +1,5 @@
 /*
-<metadata description="v1.30 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.30 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directional."
+<metadata description="v1.30 -- Turn your Lightpad Block into an expressive high resolution multi XYZ Pad controller." details="v1.30 -- Turn the entire surface into a high resolution multi XYZ pad with the addition of pressure (Z), sending out MIDI CC. Set the (primary) gem, high-resolution and MIDI channel. Use the send options to solo dimensions and easily map XYZ to different parameters in your DAW or instrument. If the high-resolution is turned on these CC's will also be counter parted with the extra LSB CC's. The side button advances the primary gem, but at any time other gems are accessible by using more than one finger. The lightpad will also reflect the received CC's and as such works bi-directionally."
           target="Lightpad"
           tags="MIDI;Controller;">
 
@@ -27,10 +27,10 @@
         <variable name="highres" displayName="High resolution" type="bool" value="true" tooltip="If this option is turned on the sent values will also be counter parted with the extra LSB CC's, giving them a much higher resolution (0 - 16383 instead of 0 - 127)"/>
         <variable name="channel" displayName="MIDI Channel" type="int" min="1" max="16" value="1" displayMode="stepper" tooltip="The MIDI channel that values are sent on"/>
         <variable name="recorder" displayName="Recorder" type="option" value="None" options="None;4 Beats;" tooltip="Recorder setting"/>
-        <variable name="clearOnCenter" displayName="Clear on Center" type="bool" value="true" tooltip="If this option is turned on the Gems will be cleared if the are set to center position"/>
+        <variable name="clearOnCenter" displayName="Clear on Center" type="bool" value="true" tooltip="If this option is turned on the Gems will be cleared if they are set to the center position"/>
 
         <variable name="dot1" displayName="Colour" group="gem1" type="colour" value="0xFFFF7F00"/>
-        <variable name="xCC1" displayName="X Axis CC" group="gem1" type="int" min="0" max="127" handleSetup="stepper" value="2§" handleSetup="stepper" />
+        <variable name="xCC1" displayName="X Axis CC" group="gem1" type="int" min="0" max="127" handleSetup="stepper" value="2" handleSetup="stepper" />
         <variable name="yCC1" displayName="Y Axis CC" group="gem1" type="int" min="0" max="127" handleSetup="stepper" value="11" handleSetup="stepper" />
         <variable name="zCC1" displayName="Z Axis CC" group="gem1" type="int" min="0" max="127" handleSetup="stepper" value="14" handleSetup="stepper" />
 
