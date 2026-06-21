@@ -1,6 +1,6 @@
 loadAPI(7);
 
-host.setShouldFailOnDeprecatedUse(true);
+host.setShouldFailOnDeprecatedUse(false);
 host.defineController("Bonboa", "Axyz Gems Control", "1.30", "7f4b4851-911b-4dbf-a6a7-ee7801296c7e", "Joris Röling");
 
 host.defineMidiPorts(1, 1);
@@ -42,8 +42,6 @@ var layoutColumns = true;
 var translateWithMap = true;
 
 function init() {
-  var controls=[];
-  for (var c=0;c<128;c++) controls.push(i+'')
   var preferences = host.getPreferences ();
 
   preferences.getEnumSetting ("Enable", "High Resolution", BOOLEAN_OPTIONS, BOOLEAN_OPTIONS[1]).addValueObserver (function (value) {

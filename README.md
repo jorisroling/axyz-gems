@@ -119,6 +119,8 @@ There are two 'drivers' for Bitwig, the **AxyzGems.control.js** which is a Javas
 
 <img src="./Documentation/images/bitwig_axyz_gems_control_ui.png" alt="Bitwig Axyz Gems Control UI" align="right" width="350" />For Bitwig Control copy the **Bitwig/AxyzGems.control.js** (get it <a href="https://raw.githubusercontent.com/jorisroling/axyz-gems/master/Bitwig/AxyzGems.control.js" target="_blank">here</a>) to your **Documents/Bitwig Studio/Controller Scripts** folder. Start Bitwig, go to **Bitwig Settings** -> **Controllers**, add the controller by clicking **Add** and selecting **Bonboa** -> **Axyz Gems Controller (by Joris Röling)**, set the MIDI in and out to **Lightpad BLOCK** or **Lightpad Block (Bluetooth)** and you're good to go. The 8 macro knobs of the selected page of the selected device will be mapped to Gem 2 - 5. The control will be hi-res, AKA 14-bit.
 
+**Note:** Axyz Gems does not show up in a track's MIDI input (Note Inputs) list, and that is normal. It is not a keyboard, the gems send Control Changes, not notes. The controller runs in the background and always follows the currently selected device, mapping the gems to that device's 8 remote-control (macro) knobs. You don't route it on a track; just select the device you want the gems to drive.
+
 ---
 <!--
 #### Generic Flexi
